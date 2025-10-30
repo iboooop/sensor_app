@@ -33,7 +33,7 @@ class desarrollador : AppCompatActivity() {
     private val dev1 = mapOf(
         "nombre" to "TAÍS CRUZ CEPEDA",
         "cargo" to "Desarrolladora Full Stack",
-        "correo" to "tais.cruz@ejemplo.com",
+        "correo" to "tais.cruz@inacapmail.cl",
         "carrera" to "Ingeniería en Informática - INACAP",
         "github" to "https://github.com/iboooop",
         "linkedin" to "https://linkedin.com/"
@@ -42,7 +42,7 @@ class desarrollador : AppCompatActivity() {
     private val dev2 = mapOf(
         "nombre" to "CATALINA ARANCIBIA PIZARRO",
         "cargo" to "QA Y PM",
-        "correo" to "catalina.arancibia@ejemplo.com",
+        "correo" to "catalina.arancibia06@inacapmail.cl",
         "carrera" to "Ingeniería en Informática - INACAP",
         "github" to "https://github.com/CatalinaArancibia",
         "linkedin" to "https://linkedin.com/"

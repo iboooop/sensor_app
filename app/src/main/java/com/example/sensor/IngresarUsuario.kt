@@ -16,6 +16,16 @@ private fun isValidName(value: String): Boolean {
     return normalized.matches(Regex("^[\\p{L}]+(?: [\\p{L}]+)*$"))
 }
 
+/** Valida contraseña fuerte: mínimo 8, mayúscula, minúscula, número y símbolo */
+private fun isStrongPassword(p: String): Boolean {
+    if (p.length < 8) return false
+    val hasUpper = p.any { it.isUpperCase() }
+    val hasLower = p.any { it.isLowerCase() }
+    val hasDigit = p.any { it.isDigit() }
+    val hasSymbol = p.any { !it.isLetterOrDigit() }
+    return hasUpper && hasLower && hasDigit && hasSymbol
+}
+
 class IngresarUsuario : AppCompatActivity() {
 
     private lateinit var etNombres: EditText
@@ -76,8 +86,11 @@ class IngresarUsuario : AppCompatActivity() {
             warn("Contraseña", "Las contraseñas no coinciden")
             return
         }
-        if (pass.length < 8) {
-            warn("Contraseña débil", "La contraseña debe tener mínimo 8 caracteres")
+        if (!isStrongPassword(pass)) {
+            warn(
+                "Contraseña débil",
+                "Debe tener mínimo 8 caracteres, incluir mayúscula, minúscula, número y símbolo"
+            )
             return
         }
 
