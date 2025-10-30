@@ -1,0 +1,132 @@
+package com.example.sensor
+
+import android.content.Intent
+import android.os.Bundle
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.button.MaterialButton
+import cn.pedant.SweetAlert.SweetAlertDialog
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var etUser: EditText
+    private lateinit var etPassword: EditText
+    private lateinit var btnLogin: MaterialButton
+    private lateinit var btnRegister: MaterialButton
+    private lateinit var api: UsuarioApiService
+
+    private var lastWarnAt = 0L
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_main)
+
+        // Aplica insets al root real del layout: login_layout
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.login_layout)) { v, insets ->
+            val sys = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(sys.left, sys.top, sys.right, sys.bottom)
+            insets
+        }
+
+        // Si ya hay sesión, ir directo al dashboard
+        SessionManager.getFullName(this)?.let {
+            if (it.isNotBlank()) {
+                startActivity(Intent(this, dashboard::class.java))
+                finish()
+                return
+            }
+        }
+
+        api = UsuarioApiService(this)
+        etUser = findViewById(R.id.etUser)
+        etPassword = findViewById(R.id.etPassword)
+        btnLogin = findViewById(R.id.btnLogin)
+        btnRegister = findViewById(R.id.btnRegister)
+
+        btnLogin.setOnClickListener { intentarLogin() }
+        btnRegister.setOnClickListener {
+            startActivity(Intent(this, ingresar::class.java))
+        }
+
+        // Olvidaste tu contraseña → RecuperarContraseniaActivity
+        findViewById<android.widget.TextView>(R.id.tvForgotPassword).setOnClickListener {
+            startActivity(Intent(this, RecuperarContraseniaActivity::class.java))
+        }
+
+        // Enviar con "Enter" desde la contraseña
+        etPassword.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                intentarLogin(); true
+            } else false
+        }
+    }
+
+    private fun intentarLogin() {
+        val correo = etUser.text.toString().trim()
+        val pass = etPassword.text.toString().trim()
+
+        if (correo.isEmpty() || pass.isEmpty()) {
+            showWarnOnce("Faltan datos", "Ingresa correo y contraseña")
+            return
+        }
+
+        setLoading(true)
+        api.login(
+            correo = correo,
+            password = pass,
+            onSuccess = { id, nombres, apellidos, email ->
+                SessionManager.saveUser(this, id, nombres, apellidos, email)
+                val i = Intent(this, dashboard::class.java).apply {
+                    putExtra("usuario_nombre", "$nombres $apellidos")
+                }
+                setLoading(false)
+                startActivity(i)
+                finish()
+            },
+            onError = { msg ->
+                setLoading(false)
+                showError("No se pudo iniciar sesión", msg)
+            }
+        )
+    }
+
+    private fun setLoading(b: Boolean) {
+        btnLogin.isEnabled = !b
+        btnRegister.isEnabled = !b
+        etUser.isEnabled = !b
+        etPassword.isEnabled = !b
+    }
+
+    // SweetAlert helpers
+    private fun showWarnOnce(title: String, content: String) {
+        val now = System.currentTimeMillis()
+        if (now - lastWarnAt < 1500) return // antirebote 1.5s
+        lastWarnAt = now
+        SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+            .setTitleText(title)
+            .setContentText(content)
+            .setConfirmText("OK")
+            .show()
+    }
+
+    private fun showError(title: String, content: String) {
+        SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
+            .setTitleText(title)
+            .setContentText(content)
+            .setConfirmText("OK")
+            .show()
+    }
+
+    private fun showInfo(title: String, content: String) {
+        SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE)
+            .setTitleText(title)
+            .setContentText(content)
+            .setConfirmText("OK")
+            .show()
+    }
+}

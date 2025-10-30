@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/recover_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF5FB"
+    android:padding="24dp">
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:src="@drawable/logosplash"
+        android:contentDescription="@string/logo_content_desc"
+        tools:ignore="Typos"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/recuperar_title"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"
+        android:textAlignment="center"
+        app:layout_constraintTop_toBottomOf="@id/logo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <EditText
+        android:id="@+id/etEmail"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:hint="@string/hint_email"
+        android:backgroundTint="#A0B9F5"
+        android:inputType="textEmailAddress"
+        android:autofillHints="emailAddress"
+        android:padding="10dp"
+        app:layout_constraintTop_toBottomOf="@id/tv_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnRecuperar"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="12dp"
+        android:text="@string/btn_recuperar"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#8DAEE1"
+        app:layout_constraintTop_toBottomOf="@id/etEmail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Sección de código -->
+    <TextView
+        android:id="@+id/tv_ingrese_codigo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ingrese_codigo"
+        android:textColor="#333333"
+        android:textStyle="bold"
+        android:layout_marginTop="24dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@id/btnRecuperar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/code_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@id/tv_ingrese_codigo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <EditText
+            android:id="@+id/etC1"
+            android:layout_width="44dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_otp_box"
+            android:gravity="center"
+            android:inputType="number"
+            android:digits="0123456789"
+            android:maxLength="1"
+            android:textSize="20sp"
+            android:layout_margin="4dp"
+            android:importantForAutofill="no"
+            android:focusableInTouchMode="true" />
+
+        <EditText
+            android:id="@+id/etC2"
+            android:layout_width="44dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_otp_box"
+            android:gravity="center"
+            android:inputType="number"
+            android:digits="0123456789"
+            android:maxLength="1"
+            android:textSize="20sp"
+            android:layout_margin="4dp"
+            android:importantForAutofill="no" />
+
+        <EditText
+            android:id="@+id/etC3"
+            android:layout_width="44dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_otp_box"
+            android:gravity="center"
+            android:inputType="number"
+            android:digits="0123456789"
+            android:maxLength="1"
+            android:textSize="20sp"
+            android:layout_margin="4dp"
+            android:importantForAutofill="no" />
+
+        <EditText
+            android:id="@+id/etC4"
+            android:layout_width="44dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_otp_box"
+            android:gravity="center"
+            android:inputType="number"
+            android:digits="0123456789"
+            android:maxLength="1"
+            android:textSize="20sp"
+            android:layout_margin="4dp"
+            android:importantForAutofill="no" />
+
+        <EditText
+            android:id="@+id/etC5"
+            android:layout_width="44dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_otp_box"
+            android:gravity="center"
+            android:inputType="number"
+            android:digits="0123456789"
+            android:maxLength="1"
+            android:textSize="20sp"
+            android:layout_margin="4dp"
+            android:importantForAutofill="no" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/timer_initial"
+        android:textColor="#666666"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@id/code_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnReenviar"
+        style="?attr/materialButtonOutlinedStyle"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:text="@string/btn_reenviar_codigo"
+        android:textAllCaps="true"
+        android:textColor="#8DAEE1"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:backgroundTint="#fbf1cf"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTimer"
+        tools:visibility="visible" />
+</androidx.constraintlayout.widget.ConstraintLayout>

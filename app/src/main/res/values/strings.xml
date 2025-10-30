@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Sensor</string>
+    <!-- Genéricos -->
+    <string name="logo_content_desc">Logotipo de la aplicación</string>
+
+    <!-- Recuperar contraseña -->
+    <string name="recuperar_title">RECUPERAR CONTRASEÑA</string>
+    <string name="hint_email">INGRESE EMAIL</string>
+    <string name="btn_recuperar">RECUPERAR</string>
+    <string name="ingrese_codigo">INGRESE CÓDIGO</string>
+    <string name="timer_initial">60 segundos</string>
+    <string name="btn_reenviar_codigo">REENVIAR CÓDIGO</string>
+
+    <!-- Crear contraseña -->
+    <string name="crear_title">CREAR CONTRASEÑA</string>
+    <string name="hint_pass1">INGRESE CLAVE</string>
+    <string name="hint_pass2">REPETIR CLAVE</string>
+    <string name="btn_crear">CREAR</string>
+</resources>
