@@ -47,7 +47,7 @@ class UsuarioApiService(ctx: Context) {
     fun login(
         correo: String,
         password: String,
-        onSuccess: (id: Int, nombres: String, apellidos: String, email: String) -> Unit,
+        onSuccess: (id: Int, nombres: String, apellidos: String, email: String, rol: String) -> Unit,
         onError: (String) -> Unit
     ) {
         val url = "$baseUrl/login.php"
@@ -63,7 +63,9 @@ class UsuarioApiService(ctx: Context) {
                     val nombres = u?.optString("nombres").orEmpty()
                     val apellidos = u?.optString("apellidos").orEmpty()
                     val email = u?.optString("correo").orEmpty()
-                    onSuccess(id, nombres, apellidos, email)
+                    // --- NUEVO ---
+                    val rol = u?.optString("rol", "operador").orEmpty() // "operador" como default
+                    onSuccess(id, nombres, apellidos, email, rol)
                 } else {
                     onError(r.optString("message", "Error de login"))
                 }

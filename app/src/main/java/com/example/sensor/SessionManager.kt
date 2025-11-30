@@ -10,18 +10,25 @@ object SessionManager {
     private const val KEY_NOMBRES = "nombres"
     private const val KEY_APELLIDOS = "apellidos"
     private const val KEY_EMAIL = "correo"
+    private const val KEY_ROL = "rol" // --- NUEVO ---
 
-    fun saveUser(ctx: Context, id: Int, nombres: String, apellidos: String, email: String) {
+    fun saveUser(ctx: Context, id: Int, nombres: String, apellidos: String, email: String, rol: String) {
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
             .putInt(KEY_ID, id)
             .putString(KEY_NOMBRES, nombres)
             .putString(KEY_APELLIDOS, apellidos)
             .putString(KEY_EMAIL, email)
+            .putString(KEY_ROL, rol) // --- NUEVO ---
             .apply()
     }
 
     fun getUserId(ctx: Context): Int =
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getInt(KEY_ID, -1)
+
+    fun getUserRole(ctx: Context): String? { // --- NUEVO ---
+        val sp = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        return sp.getString(KEY_ROL, null)
+    }
 
     fun getFullName(ctx: Context): String? {
         val sp = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
