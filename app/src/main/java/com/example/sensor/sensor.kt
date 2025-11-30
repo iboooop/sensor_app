@@ -31,8 +31,8 @@ class sensor : AppCompatActivity() {
     private lateinit var temp: TextView
     private lateinit var hum: TextView
     private lateinit var imagenTemp: ImageView
-    private lateinit var imagenLinternaOn: ImageView
-    private lateinit var imagenLinternaOff: ImageView
+    private lateinit var imagenAmpolleta: ImageView
+    private lateinit var imagenLinterna: ImageView
     private lateinit var requestQueue: RequestQueue
 
     private lateinit var cameraManager: CameraManager
@@ -42,15 +42,17 @@ class sensor : AppCompatActivity() {
     private val mHandler = Handler(Looper.getMainLooper())
 
     private var linternaEncendida = false
+    private var ampolletaEncendida = false
     private var tienePermisoLinterna = false
+
+    private val PREFS_NAME = "sensor_prefs"
+    private val AMPOLLETA_KEY = "ampolleta_encendida"
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         tienePermisoLinterna = isGranted
-        if (isGranted) {
-            mostrarAlertaExito("Permiso de linterna concedido")
-        } else {
+        if (!isGranted) {
             mostrarAlertaError("Permiso de linterna denegado")
         }
     }
@@ -66,6 +68,13 @@ class sensor : AppCompatActivity() {
             insets
         }
 
+        fecha = findViewById(R.id.txt_fecha)
+        temp = findViewById(R.id.txt_temp)
+        hum = findViewById(R.id.txt_humedad)
+        imagenTemp = findViewById(R.id.imagen_temp)
+        imagenAmpolleta = findViewById(R.id.imagen_ampolleta)
+        imagenLinterna = findViewById(R.id.imagen_linterna)
+
         // Inicializar CameraManager
         cameraManager = getSystemService(CAMERA_SERVICE) as CameraManager
         cameraId = cameraManager.cameraIdList.first { id ->
@@ -73,64 +82,77 @@ class sensor : AppCompatActivity() {
                 .get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true
         }
 
-        initializeViews()
+        // Recuperar estado de ampolleta para la sesión
+        ampolletaEncendida = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+            .getBoolean(AMPOLLETA_KEY, false)
+        if (ampolletaEncendida) {
+            imagenAmpolleta.setImageResource(R.drawable.ampolletaon)
+        } else {
+            imagenAmpolleta.setImageResource(R.drawable.ampolletaoff)
+        }
+
+        imagenLinterna.setImageResource(R.drawable.off)
+        linternaEncendida = false
+
         requestQueue = Volley.newRequestQueue(this)
+        configurarAmpolleta()
         configurarLinterna()
         mHandler.post(refrescar)
     }
 
     override fun onStart() {
         super.onStart()
-        // 🔁 Pedir permiso de linterna cada vez que se abre la app
         solicitarPermisoLinterna()
     }
 
-    private fun initializeViews() {
-        fecha = findViewById(R.id.txt_fecha)
-        temp = findViewById(R.id.txt_temp)
-        hum = findViewById(R.id.txt_humedad)
-        imagenTemp = findViewById(R.id.imagen_temp)
-        imagenLinternaOn = findViewById(R.id.imagen_linterna_on)
-        imagenLinternaOff = findViewById(R.id.imagen_linterna_off)
-
-        linternaEncendida = getSharedPreferences("sensor_prefs", MODE_PRIVATE)
-            .getBoolean("linterna_encendida", false)
+    private fun solicitarPermisoLinterna() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+        } else {
+            tienePermisoLinterna = true
+        }
     }
 
-    private fun solicitarPermisoLinterna() {
-        // 🔁 Siempre pedimos el permiso al abrir la app
-        requestPermissionLauncher.launch(Manifest.permission.CAMERA)
+    private fun configurarAmpolleta() {
+        imagenAmpolleta.setOnClickListener {
+            ampolletaEncendida = !ampolletaEncendida
+            val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
+            prefs.putBoolean(AMPOLLETA_KEY, ampolletaEncendida).apply()
+
+            if (ampolletaEncendida) {
+                imagenAmpolleta.setImageResource(R.drawable.ampolletaon)
+                mostrarAlertaExito("Ampolleta encendida")
+            } else {
+                imagenAmpolleta.setImageResource(R.drawable.ampolletaoff)
+                mostrarAlertaExito("Ampolleta apagada")
+            }
+        }
     }
 
     private fun configurarLinterna() {
-        imagenLinternaOn.setOnClickListener {
+        imagenLinterna.setOnClickListener {
             if (!tienePermisoLinterna) {
                 mostrarAlertaError("Permiso de cámara no concedido")
                 return@setOnClickListener
             }
-            linternaEncendida = true
-            actualizarLinterna()
-        }
-
-        imagenLinternaOff.setOnClickListener {
-            if (!tienePermisoLinterna) {
-                mostrarAlertaError("Permiso de cámara no concedido")
-                return@setOnClickListener
+            linternaEncendida = !linternaEncendida
+            if (linternaEncendida) {
+                imagenLinterna.setImageResource(R.drawable.on)
+                actualizarLinterna(true)
+                mostrarAlertaExito("Linterna encendida")
+            } else {
+                imagenLinterna.setImageResource(R.drawable.off)
+                actualizarLinterna(false)
+                mostrarAlertaExito("Linterna apagada")
             }
-            linternaEncendida = false
-            actualizarLinterna()
         }
     }
 
-    private fun actualizarLinterna() {
+    private fun actualizarLinterna(encender: Boolean) {
         try {
-            cameraManager.setTorchMode(cameraId, linternaEncendida)
-            val estado = if (linternaEncendida) "Encendida" else "Apagada"
-            mostrarAlertaExito("Linterna $estado")
-
-            getSharedPreferences("sensor_prefs", MODE_PRIVATE).edit()
-                .putBoolean("linterna_encendida", linternaEncendida)
-                .apply()
+            cameraManager.setTorchMode(cameraId, encender)
         } catch (e: Exception) {
             mostrarAlertaError("No se pudo cambiar la linterna: ${e.message}")
         }
@@ -163,8 +185,7 @@ class sensor : AppCompatActivity() {
                     temp.text = "Temperatura: $temperatura °C"
                     hum.text = "Humedad: $humedad %"
 
-                    val valor = temperatura.toFloat()
-                    cambiarImagenTemperatura(valor)
+                    cambiarImagenTemperatura(temperatura.toFloat())
                 } catch (e: JSONException) {
                     mostrarAlertaError("Error al procesar datos: ${e.message}")
                 }
@@ -177,9 +198,11 @@ class sensor : AppCompatActivity() {
     }
 
     private fun cambiarImagenTemperatura(valor: Float) {
-        imagenTemp.setImageResource(
-            if (valor >= 20) R.drawable.temperaturados else R.drawable.tempbaja
-        )
+        if (valor > 20f) {
+            imagenTemp.setImageResource(R.drawable.temperaturados) // alta
+        } else {
+            imagenTemp.setImageResource(R.drawable.tempbaja) // baja
+        }
     }
 
     private fun mostrarAlertaError(mensaje: String) {

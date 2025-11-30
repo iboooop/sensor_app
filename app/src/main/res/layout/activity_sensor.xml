@@ -147,9 +147,9 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/layout_hum" />
 
-        <!-- Botones Linterna -->
+        <!-- Solo dos imágenes: ampolletaoff (izquierda) y off (derecha) -->
         <LinearLayout
-            android:id="@+id/layout_linterna"
+            android:id="@+id/layout_controles"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -160,28 +160,28 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <!-- Botón Apagar -->
+            <!-- Ampolleta visual (izquierda) -->
             <ImageView
-                android:id="@+id/imagen_linterna_off"
+                android:id="@+id/imagen_ampolleta"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="32dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Apagar linterna"
-                android:src="@drawable/off" />
+                android:contentDescription="Ampolleta"
+                android:src="@drawable/ampolletaoff" />
 
-            <!-- Botón Encender -->
+            <!-- Linterna (derecha) -->
             <ImageView
-                android:id="@+id/imagen_linterna_on"
+                android:id="@+id/imagen_linterna"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Encender linterna"
-                android:src="@drawable/on" />
+                android:contentDescription="Linterna"
+                android:src="@drawable/off" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
