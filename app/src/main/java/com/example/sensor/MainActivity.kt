@@ -5,11 +5,11 @@ import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app. AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton
-import cn.pedant.SweetAlert.SweetAlertDialog
+import cn.pedant.SweetAlert. SweetAlertDialog
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,29 +22,29 @@ class MainActivity : AppCompatActivity() {
     private var lastWarnAt = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        super. onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
         // Aplica insets al root real del layout: login_layout
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.login_layout)) { v, insets ->
-            val sys = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(sys.left, sys.top, sys.right, sys.bottom)
+            val sys = insets.getInsets(WindowInsetsCompat.Type. systemBars())
+            v. setPadding(sys.left, sys.top, sys.right, sys.bottom)
             insets
         }
 
         // Si ya hay sesión, ir directo al dashboard
         SessionManager.getFullName(this)?.let {
             if (it.isNotBlank()) {
-                startActivity(Intent(this, dashboard::class.java))
+                startActivity(Intent(this, dashboard::class. java))
                 finish()
                 return
             }
         }
 
         api = UsuarioApiService(this)
-        etUser = findViewById(R.id.etUser)
-        etPassword = findViewById(R.id.etPassword)
+        etUser = findViewById(R. id.etUser)
+        etPassword = findViewById(R.id. etPassword)
         btnLogin = findViewById(R.id.btnLogin)
         btnRegister = findViewById(R.id.btnRegister)
 
@@ -60,15 +60,18 @@ class MainActivity : AppCompatActivity() {
 
         // Enviar con "Enter" desde la contraseña
         etPassword.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                intentarLogin(); true
-            } else false
+            if (actionId == EditorInfo. IME_ACTION_DONE) {
+                intentarLogin()
+                true
+            } else {
+                false
+            }
         }
     }
 
     private fun intentarLogin() {
-        val correo = etUser.text.toString().trim()
-        val pass = etPassword.text.toString().trim()
+        val correo = etUser.text. toString().trim()
+        val pass = etPassword.text.toString(). trim()
 
         if (correo.isEmpty() || pass.isEmpty()) {
             showWarnOnce("Faltan datos", "Ingresa correo y contraseña")
@@ -76,21 +79,58 @@ class MainActivity : AppCompatActivity() {
         }
 
         setLoading(true)
-        api.login(
+        api. login(
             correo = correo,
             password = pass,
-            onSuccess = { id, nombres, apellidos, email ->
-                SessionManager.saveUser(this, id, nombres, apellidos, email)
+            onSuccess = { id, nombres, apellidos, email, rol, estado ->
+                // ✅ Guardar usuario con rol y estado
+                SessionManager.saveUser(this, id, nombres, apellidos, email, rol, estado)
+
+                // Mostrar mensaje de bienvenida según rol
+                val mensaje = when (rol) {
+                    "admin" -> "Bienvenido Administrador"
+                    "operador" -> "Bienvenido Operador"
+                    else -> "Bienvenido"
+                }
+
                 val i = Intent(this, dashboard::class.java).apply {
                     putExtra("usuario_nombre", "$nombres $apellidos")
+                    putExtra("usuario_rol", rol)
+                    putExtra("usuario_estado", estado)
                 }
+
                 setLoading(false)
-                startActivity(i)
-                finish()
+
+                // Mostrar mensaje de bienvenida con SweetAlert
+                SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
+                    .setTitleText(mensaje)
+                    . setContentText("$nombres $apellidos")
+                    .setConfirmText("Continuar")
+                    .setConfirmClickListener {
+                        it.dismissWithAnimation()
+                        startActivity(i)
+                        finish()
+                    }
+                    . show()
             },
             onError = { msg ->
                 setLoading(false)
-                showError("No se pudo iniciar sesión", msg)
+
+                // Mostrar error específico según el mensaje
+                val (titulo, contenido) = when {
+                    msg.contains("inactivo", ignoreCase = true) ->
+                        "Usuario Inactivo" to "Tu cuenta está desactivada.  Contacta al administrador."
+                    msg.contains("contraseña", ignoreCase = true) || msg.contains("incorrecta", ignoreCase = true) ->
+                        "Contraseña Incorrecta" to "Verifica tu contraseña e intenta nuevamente."
+                    msg.contains("no encontrado", ignoreCase = true) ->
+                        "Usuario no encontrado" to "El correo ingresado no está registrado."
+                    msg.contains("credenciales", ignoreCase = true) ->
+                        "Credenciales Incorrectas" to "Usuario o contraseña incorrectos."
+                    else ->
+                        "Error de inicio de sesión" to msg
+                }
+
+                showError(titulo, contenido)
             }
         )
     }
@@ -107,11 +147,11 @@ class MainActivity : AppCompatActivity() {
         val now = System.currentTimeMillis()
         if (now - lastWarnAt < 1500) return // antirebote 1.5s
         lastWarnAt = now
-        SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+        SweetAlertDialog(this, SweetAlertDialog. WARNING_TYPE)
             .setTitleText(title)
             .setContentText(content)
             .setConfirmText("OK")
-            .show()
+            . show()
     }
 
     private fun showError(title: String, content: String) {
@@ -125,7 +165,7 @@ class MainActivity : AppCompatActivity() {
     private fun showInfo(title: String, content: String) {
         SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE)
             .setTitleText(title)
-            .setContentText(content)
+            . setContentText(content)
             .setConfirmText("OK")
             .show()
     }

@@ -1,7 +1,7 @@
 package com.example.sensor
 
 import android.content.Context
-import android.util.Log
+import android.util. Log
 import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -27,7 +27,7 @@ class UsuarioApiService(ctx: Context) {
         onError: (String) -> Unit
     ) {
         val url = "$baseUrl/registrar.php"
-        val body = JSONObject().apply {
+        val body = JSONObject(). apply {
             put("nombres", nombre)
             put("apellidos", apellido)
             put("correo", email)
@@ -36,18 +36,18 @@ class UsuarioApiService(ctx: Context) {
         val req = JsonObjectRequest(Request.Method.POST, url, body,
             { r ->
                 val ok = r.optBoolean("success", false) || r.optString("status") == "success"
-                if (ok) onSuccess() else onError(r.optString("message", "Error creando usuario"))
+                if (ok) onSuccess() else onError(r. optString("message", "Error creando usuario"))
             },
             { e -> onError("Conexión fallida: ${e.message ?: "desconocido"}") }
         )
         q.add(req)
     }
 
-    /** LOGIN */
+    /** LOGIN - MEJORADO CON VALIDACIÓN DE ESTADO */
     fun login(
         correo: String,
         password: String,
-        onSuccess: (id: Int, nombres: String, apellidos: String, email: String) -> Unit,
+        onSuccess: (id: Int, nombres: String, apellidos: String, email: String, rol: String, estado: String) -> Unit,
         onError: (String) -> Unit
     ) {
         val url = "$baseUrl/login.php"
@@ -55,21 +55,84 @@ class UsuarioApiService(ctx: Context) {
             put("correo", correo)
             put("password", password)
         }
+
+        Log.d(TAG, "=== LOGIN REQUEST ===")
+        Log. d(TAG, "URL: $url")
+        Log.d(TAG, "Body: $body")
+
         val req = JsonObjectRequest(Request.Method.POST, url, body,
             { r ->
-                if (r.optString("status") == "success" || r.optBoolean("success", false)) {
-                    val u = r.optJSONObject("usuario")
-                    val id = parseId(u)
-                    val nombres = u?.optString("nombres").orEmpty()
-                    val apellidos = u?.optString("apellidos").orEmpty()
-                    val email = u?.optString("correo").orEmpty()
-                    onSuccess(id, nombres, apellidos, email)
-                } else {
-                    onError(r.optString("message", "Error de login"))
+                Log.d(TAG, "=== LOGIN RESPONSE SUCCESS ===")
+                Log. d(TAG, "Response: $r")
+
+                try {
+                    if (r.optString("status") == "success" || r.optBoolean("success", false)) {
+                        val u = r.optJSONObject("usuario")
+                        if (u != null) {
+                            Log.d(TAG, "Usuario object: $u")
+
+                            val id = parseId(u)
+                            val nombres = u.optString("nombres", "")
+                            val apellidos = u.optString("apellidos", "")
+                            val email = u.optString("correo", "")
+                            val rol = u.optString("rol", "operador")
+                            val estado = u.optString("estado", "activo")
+
+                            Log. d(TAG, "Parsed: id=$id, nombres=$nombres, apellidos=$apellidos, rol=$rol, estado=$estado")
+
+                            if (estado == "inactivo") {
+                                onError("Usuario inactivo.  Contacte al administrador")
+                            } else {
+                                onSuccess(id, nombres, apellidos, email, rol, estado)
+                            }
+                        } else {
+                            Log.e(TAG, "Usuario object is null")
+                            onError("Datos de usuario incompletos")
+                        }
+                    } else {
+                        val errorMsg = r.optString("message", "Error de login")
+                        Log.e(TAG, "Login failed: $errorMsg")
+                        onError(errorMsg)
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Exception parsing success response: ${e.message}", e)
+                    onError("Error procesando respuesta: ${e.message}")
                 }
             },
-            { e -> onError("Conexión fallida: ${e.message ?: "desconocido"}") }
-        )
+            { e ->
+                val statusCode = e.networkResponse?.statusCode ?: 0
+                val rawBody = e.networkResponse?.data?.let { String(it) } ?: ""
+
+                Log.e(TAG, "=== LOGIN RESPONSE ERROR ===")
+                Log.e(TAG, "Status code: $statusCode")
+                Log.e(TAG, "Error message: ${e.message}")
+                Log.e(TAG, "Raw body: $rawBody")
+                Log.e(TAG, "Exception: ", e)
+
+                try {
+                    val errorJson = JSONObject(rawBody)
+                    val errorMsg = errorJson.optString("message", "Error de conexión")
+                    onError(errorMsg)
+                } catch (ex: Exception) {
+                    Log.e(TAG, "Can't parse error JSON: ${ex.message}")
+
+                    if (rawBody.isNotEmpty()) {
+                        onError("Error del servidor: ${rawBody. take(200)}")
+                    } else {
+                        when (statusCode) {
+                            401 -> onError("Credenciales incorrectas")
+                            403 -> onError("Usuario inactivo")
+                            500 -> onError("Error interno del servidor")
+                            0 -> onError("No se pudo conectar al servidor.  Verifica tu conexión.")
+                            else -> onError("Error de conexión (código: $statusCode)")
+                        }
+                    }
+                }
+            }
+        ). apply {
+            retryPolicy = DefaultRetryPolicy(15000, 1, 1.0f)
+        }
+
         q.add(req)
     }
 
@@ -93,7 +156,7 @@ class UsuarioApiService(ctx: Context) {
             { r ->
                 val ok = r.optBoolean("success", false) || r.optString("status") == "success"
                 if (ok) onSuccess(r.optInt("id", 0))
-                else onError(r.optString("message", "Error registrando"))
+                else onError(r. optString("message", "Error registrando"))
             },
             { e -> onError("Conexión fallida: ${e.message ?: "desconocido"}") }
         )
@@ -127,9 +190,9 @@ class UsuarioApiService(ctx: Context) {
                     onError("Error parseando: ${e.message}")
                 }
             },
-            { e -> onError("Conexión fallida: ${e.message ?: "desconocido"}") }
+            { e -> onError("Conexión fallida: ${e. message ?: "desconocido"}") }
         )
-        q.add(req)
+        q. add(req)
     }
 
     /** OBTENER USUARIO POR ID */
@@ -138,7 +201,7 @@ class UsuarioApiService(ctx: Context) {
         onSuccess: (Usuario) -> Unit,
         onError: (String) -> Unit
     ) {
-        val url = "$baseUrl/getUsuarioPorId.php?id=$id"
+        val url = "$baseUrl/getUsuarioPorId.php? id=$id"
         val req = JsonObjectRequest(Request.Method.GET, url, null,
             { r ->
                 try {
@@ -159,7 +222,7 @@ class UsuarioApiService(ctx: Context) {
                     onError("Error parseando: ${e.message}")
                 }
             },
-            { e -> onError("Conexión fallida: ${e.message ?: "desconocido"}") }
+            { e -> onError("Conexión fallida: ${e. message ?: "desconocido"}") }
         )
         q.add(req)
     }
@@ -188,9 +251,9 @@ class UsuarioApiService(ctx: Context) {
                     onError("Error parseando respuesta: ${e.message}")
                 }
             },
-            Response.ErrorListener { e ->
-                val body = e.networkResponse?.data?.let { String(it) } ?: ""
-                onError("Conexión fallida: ${e.message ?: "desconocido"} ${body.take(200)}")
+            Response. ErrorListener { e ->
+                val body = e.networkResponse?.data?. let { String(it) } ?: ""
+                onError("Conexión fallida: ${e. message ?: "desconocido"} ${body.take(200)}")
             }
         ) {
             override fun getParams(): MutableMap<String, String> = hashMapOf(
@@ -199,7 +262,7 @@ class UsuarioApiService(ctx: Context) {
                 "apellidos" to apellido,
                 "correo" to email
             )
-        }.apply { retryPolicy = DefaultRetryPolicy(15_000, 1, 1.0f) }
+        }.apply { retryPolicy = DefaultRetryPolicy(15000, 1, 1.0f) }
         q.add(req)
     }
 
@@ -221,26 +284,22 @@ class UsuarioApiService(ctx: Context) {
                     val ok = r.optBoolean("success", false) || r.optString("status") == "success"
                     if (ok) onSuccess() else onError(r.optString("message", "Error eliminando"))
                 } catch (e: Exception) {
-                    onError("Error parseando respuesta: ${e.message}")
+                    onError("Error parseando respuesta: ${e. message}")
                 }
             },
             Response.ErrorListener { e ->
-                val body = e.networkResponse?.data?.let { String(it) } ?: ""
+                val body = e. networkResponse?.data?.let { String(it) } ?: ""
                 onError("Conexión fallida: ${e.message ?: "desconocido"} ${body.take(200)}")
             }
         ) {
             override fun getParams(): MutableMap<String, String> = hashMapOf(
                 "id" to id.toString()
             )
-        }.apply { retryPolicy = DefaultRetryPolicy(15_000, 1, 1.0f) }
+        }.apply { retryPolicy = DefaultRetryPolicy(15000, 1, 1.0f) }
         q.add(req)
     }
 
-    // =======================
-    // RECUPERAR CONTRASEÑA
-    // =======================
-
-    /** 1) Enviar código de recuperación a correo (5 dígitos, 1 min) */
+    /** ENVIAR CÓDIGO DE RECUPERACIÓN */
     fun enviarCodigoRecuperacion(
         email: String,
         onSuccess: () -> Unit,
@@ -248,27 +307,23 @@ class UsuarioApiService(ctx: Context) {
     ) {
         val url = "$baseUrl/enviar_codigo.php"
         val req = object : StringRequest(Method.POST, url,
-            Response.Listener { resp ->
-                Log.d(TAG, "enviar_codigo resp=${resp.take(500)}")
-                val (ok, msg) = parseServerSuccess(
-                    resp,
-                    // stems: envi.. (enviado/enviamos), ok, success
-                    listOf("envi", "ok", "success")
-                )
+            Response. Listener { resp ->
+                Log. d(TAG, "enviar_codigo resp=${resp.take(500)}")
+                val (ok, msg) = parseServerSuccess(resp, listOf("envi", "ok", "success"))
                 if (ok) onSuccess() else onError(msg)
             },
             Response.ErrorListener { e ->
-                val body = e.networkResponse?.data?.let { String(it) } ?: ""
+                val body = e.networkResponse?.data?. let { String(it) } ?: ""
                 Log.e(TAG, "enviar_codigo error=${e.message} body=${body.take(500)}")
                 onError("Error de red: ${e.message ?: "desconocido"} ${body.take(200)}")
             }
         ) {
             override fun getParams(): MutableMap<String, String> = hashMapOf("correo" to email)
-        }.apply { retryPolicy = DefaultRetryPolicy(15_000, 1, 1.0f) }
+        }.apply { retryPolicy = DefaultRetryPolicy(15000, 1, 1.0f) }
         q.add(req)
     }
 
-    /** 2) Verificar código de 5 dígitos */
+    /** VERIFICAR CÓDIGO */
     fun verificarCodigo(
         email: String,
         codigo: String,
@@ -279,26 +334,21 @@ class UsuarioApiService(ctx: Context) {
         val req = object : StringRequest(Method.POST, url,
             Response.Listener { resp ->
                 Log.d(TAG, "verificar_codigo resp=${resp.take(500)}")
-                val (ok, msg) = parseServerSuccess(
-                    resp,
-                    // stems: verific.. (verificado/verifica), valid.., correct..
-                    listOf("verific", "valid", "válid", "correct", "ok", "success")
-                )
+                val (ok, msg) = parseServerSuccess(resp, listOf("verific", "valid", "válid", "correct", "ok", "success"))
                 if (ok) onSuccess() else onError(msg)
             },
             Response.ErrorListener { e ->
-                val body = e.networkResponse?.data?.let { String(it) } ?: ""
-                Log.e(TAG, "verificar_codigo error=${e.message} body=${body.take(500)}")
+                val body = e.networkResponse?. data?.let { String(it) } ?: ""
+                Log. e(TAG, "verificar_codigo error=${e.message} body=${body.take(500)}")
                 onError("Error de red: ${e.message ?: "desconocido"} ${body.take(200)}")
             }
         ) {
-            override fun getParams(): MutableMap<String, String> =
-                hashMapOf("correo" to email, "codigo" to codigo)
-        }.apply { retryPolicy = DefaultRetryPolicy(15_000, 1, 1.0f) }
+            override fun getParams(): MutableMap<String, String> = hashMapOf("correo" to email, "codigo" to codigo)
+        }. apply { retryPolicy = DefaultRetryPolicy(15000, 1, 1.0f) }
         q.add(req)
     }
 
-    /** 3) Crear nueva contraseña usando email + código */
+    /** CREAR NUEVA CONTRASEÑA */
     fun crearContrasenia(
         email: String,
         codigo: String,
@@ -306,57 +356,42 @@ class UsuarioApiService(ctx: Context) {
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        val url = "$baseUrl/crear_contrasenia.php"
+        val url = "$baseUrl/crear_contrasenia. php"
         val req = object : StringRequest(Method.POST, url,
             Response.Listener { resp ->
-                Log.d(TAG, "crear_contrasenia resp=${resp.take(500)}")
-                val (ok, msg) = parseServerSuccess(
-                    resp,
-                    // stems: actualiz.., cambi.., restable..
-                    listOf("actualiz", "cambi", "restable", "ok", "success")
-                )
+                Log. d(TAG, "crear_contrasenia resp=${resp.take(500)}")
+                val (ok, msg) = parseServerSuccess(resp, listOf("actualiz", "cambi", "restable", "ok", "success"))
                 if (ok) onSuccess() else onError(msg)
             },
             Response.ErrorListener { e ->
                 val body = e.networkResponse?.data?.let { String(it) } ?: ""
-                Log.e(TAG, "crear_contrasenia error=${e.message} body=${body.take(500)}")
+                Log.e(TAG, "crear_contrasenia error=${e. message} body=${body.take(500)}")
                 onError("Error de red: ${e.message ?: "desconocido"} ${body.take(200)}")
             }
         ) {
-            override fun getParams(): MutableMap<String, String> =
-                hashMapOf("correo" to email, "codigo" to codigo, "password" to nueva)
-        }.apply { retryPolicy = DefaultRetryPolicy(15_000, 1, 1.0f) }
+            override fun getParams(): MutableMap<String, String> = hashMapOf("correo" to email, "codigo" to codigo, "password" to nueva)
+        }.apply { retryPolicy = DefaultRetryPolicy(15000, 1, 1.0f) }
         q.add(req)
     }
 
-    /** Parser tolerante a texto/HTML/emojis: intenta JSON; si falla, busca stems en texto plano */
     private fun parseServerSuccess(resp: String, successKeywords: List<String>): Pair<Boolean, String> {
         val trimmed = resp.trim()
-        // 1) Intentar JSON
         try {
             val r = JSONObject(trimmed)
-            val ok = r.optBoolean("success", false) || r.optString("status").equals("success", true)
+            val ok = r.optBoolean("success", false) || r.optString("status"). equals("success", true)
             val msg = r.optString("message", if (ok) "OK" else "Operación no exitosa")
             return ok to msg
         } catch (_: Exception) {
-            // 2) Texto/HTML: limpiar etiquetas y emojis y normalizar a minúsculas
             val noHtml = trimmed.replace(Regex("<[^>]*>"), " ")
             val lower = noHtml.lowercase()
-            // quitar caracteres no alfanuméricos (emojis, etc.) para facilitar búsqueda
-            val simplified = lower.replace(Regex("[^a-z0-9áéíóúüñ ]"), " ")
+            val simplified = lower. replace(Regex("[^a-z0-9áéíóúüñ ]"), " ")
             val looksOk = successKeywords.any { kw -> simplified.contains(kw) }
-            val msg = if (looksOk) {
-                // intenta sacar un mensaje legible
-                trimmed.take(200)
-            } else {
-                "Respuesta inválida del servidor: ${trimmed.take(200)}"
-            }
+            val msg = if (looksOk) trimmed.take(200) else "Respuesta inválida del servidor: ${trimmed.take(200)}"
             return looksOk to msg
         }
     }
 
-    /** PARSEAR ID (compatible con varias claves) */
-    private fun parseId(o: JSONObject?): Int {
+    private fun parseId(o: JSONObject? ): Int {
         if (o == null) return 0
         val keys = arrayOf("id", "usuario_id", "id_usuario", "codigo", "user_id")
         for (k in keys) {
