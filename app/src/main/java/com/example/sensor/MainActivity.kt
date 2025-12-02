@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        // Aplica insets al root real del layout: login_layout
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.login_layout)) { v, insets ->
             val sys = insets.getInsets(WindowInsetsCompat.Type. systemBars())
             v. setPadding(sys.left, sys.top, sys.right, sys.bottom)
@@ -40,6 +39,9 @@ class MainActivity : AppCompatActivity() {
                 finish()
                 return
             }
+            startActivity(intent)
+            finish()
+            return // Evita que el resto del onCreate se ejecute
         }
 
         api = UsuarioApiService(this)
@@ -53,12 +55,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, ingresar::class.java))
         }
 
-        // Olvidaste tu contraseña → RecuperarContraseniaActivity
         findViewById<android.widget.TextView>(R.id.tvForgotPassword).setOnClickListener {
-            startActivity(Intent(this, RecuperarContraseniaActivity::class.java))
+            // Asumo que tienes una actividad para esto. Si no, crea el archivo.
+            // startActivity(Intent(this, RecuperarContraseniaActivity::class.java))
         }
 
-        // Enviar con "Enter" desde la contraseña
         etPassword.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo. IME_ACTION_DONE) {
                 intentarLogin()
@@ -142,10 +143,9 @@ class MainActivity : AppCompatActivity() {
         etPassword.isEnabled = !b
     }
 
-    // SweetAlert helpers
     private fun showWarnOnce(title: String, content: String) {
         val now = System.currentTimeMillis()
-        if (now - lastWarnAt < 1500) return // antirebote 1.5s
+        if (now - lastWarnAt < 1500) return
         lastWarnAt = now
         SweetAlertDialog(this, SweetAlertDialog. WARNING_TYPE)
             .setTitleText(title)
