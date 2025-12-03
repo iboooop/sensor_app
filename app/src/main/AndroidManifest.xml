@@ -19,7 +19,19 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
-        <!-- Actividades para recuperación de contraseña -->
+        <!-- GESTIÓN DE SENSORES (NUEVO) -->
+        <!-- Corrección: OpcionesCrudSensor con mayúsculas para coincidir con la clase -->
+        <activity
+            android:name=".OpcionesCrudSensor"
+            android:exported="false" />
+        <activity
+            android:name=".ListarSensor"
+            android:exported="false" />
+        <!-- Puedes agregar .IngresarSensor aquí cuando lo crees -->
+        <!-- <activity android:name=".IngresarSensor" android:exported="false" /> -->
+
+
+        <!-- RECUPERACIÓN DE CONTRASEÑA -->
         <activity
             android:name=".RecuperarContraseniaActivity"
             android:exported="false" />
@@ -27,7 +39,7 @@
             android:name=".CrearContraseniaActivity"
             android:exported="false" />
 
-        <!-- SplashActivity como launcher -->
+        <!-- SPLASH (LAUNCHER) -->
         <activity
             android:name=".SplashActivity"
             android:exported="true">
@@ -37,19 +49,32 @@
             </intent-filter>
         </activity>
 
-        <!-- MainActivity (ya no es launcher) -->
+        <!-- MAIN (LOGIN) -->
         <activity
             android:name=".MainActivity"
             android:exported="true" />
 
-        <!-- Otras actividades -->
-        <activity android:name=".dashboard" android:exported="true" />
-        <activity android:name=".opciones_crudusuario" android:exported="true" />
-        <activity android:name=".IngresarUsuario" android:exported="false" />
-        <activity android:name=".ListarUsuario" android:exported="false" />
-        <activity android:name=".ModificarUsuario" android:exported="false" />
-        <activity android:name=".sensor" android:exported="true" />
-        <activity android:name=".desarrollador" android:exported="true" />
+        <!-- DASHBOARD Y OTRAS -->
+        <activity
+            android:name=".dashboardAdmin"
+            android:exported="true" />
+        <activity
+            android:name=".opciones_crudusuario"
+            android:exported="true" />
+        <activity
+            android:name=".IngresarUsuario"
+            android:exported="false" />
+        <activity
+            android:name=".ListarUsuario"
+            android:exported="false" />
+        <activity
+            android:name=".ModificarUsuario"
+            android:exported="false" />
+
+        <!-- Actividades antiguas o utilitarias -->
+        <activity
+            android:name=".desarrollador"
+            android:exported="true" />
 
     </application>
 

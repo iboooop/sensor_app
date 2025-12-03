@@ -13,9 +13,9 @@ import com.google.android.material.button.MaterialButton
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import cn.pedant.SweetAlert.SweetAlertDialog // <-- si usas SweetAlert
+import cn.pedant.SweetAlert.SweetAlertDialog
 
-class dashboard : AppCompatActivity() {
+class dashboardAdmin : AppCompatActivity() {
 
     private lateinit var tvBienvenida: TextView
     private lateinit var tvNombreUsuario: TextView
@@ -31,7 +31,7 @@ class dashboard : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_dashboard)
+        setContentView(R.layout.activity_dashboardadmin) // Asegúrate que este sea el nombre correcto de tu XML (dashboard.xml o activity_dashboard.xml)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main_dashboard)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -52,7 +52,7 @@ class dashboard : AppCompatActivity() {
         btnCrudUser = findViewById(R.id.btn_crud_user)
         btnSensor = findViewById(R.id.btn_sensor)
         btnDeveloper = findViewById(R.id.btn_developer)
-        btnLogout = findViewById(R.id.btn_logout) // <-- referenciar botón
+        btnLogout = findViewById(R.id.btn_logout)
     }
 
     private fun cargarDatosUsuario() {
@@ -66,14 +66,27 @@ class dashboard : AppCompatActivity() {
     }
 
     private fun setupClickListeners() {
-        btnCrudUser.setOnClickListener { startActivity(Intent(this, opciones_crudusuario::class.java)) }
-        btnSensor.setOnClickListener { startActivity(Intent(this, sensor::class.java)) }
-        btnDeveloper.setOnClickListener { startActivity(Intent(this, desarrollador::class.java)) }
-        btnLogout.setOnClickListener { confirmarLogout() } // <-- funcionalidad
+        // Botón Gestión de Usuarios
+        btnCrudUser.setOnClickListener {
+            // Asegúrate de usar el nombre correcto de la clase (revisamos que sea con mayúscula si la cambiaste)
+            startActivity(Intent(this, opciones_crudusuario::class.java))
+        }
+
+        // Botón Gestión de Sensores -> Ahora va a OpcionesCrudSensor
+        btnSensor.setOnClickListener {
+            startActivity(Intent(this, OpcionesCrudSensor::class.java))
+        }
+
+        // Botón Desarrollador
+        btnDeveloper.setOnClickListener {
+            startActivity(Intent(this, desarrollador::class.java))
+        }
+
+        // Botón Salir
+        btnLogout.setOnClickListener { confirmarLogout() }
     }
 
     private fun confirmarLogout() {
-        // Versión con SweetAlert
         SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
             .setTitleText("Cerrar sesión")
             .setContentText("¿Deseas salir de tu cuenta?")

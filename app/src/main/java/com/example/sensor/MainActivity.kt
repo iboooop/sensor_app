@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         // Si ya hay sesión, ir directo al dashboard
         SessionManager.getFullName(this)?.let {
             if (it.isNotBlank()) {
-                startActivity(Intent(this, dashboard::class.java))
+                startActivity(Intent(this, dashboardAdmin::class.java))
                 finish()
                 return
             }
@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
                     else -> "Bienvenido"
                 }
 
-                val i = Intent(this, dashboard::class.java).apply {
+                val i = Intent(this, dashboardAdmin::class.java).apply {
                     putExtra("usuario_nombre", "$nombres $apellidos")
                     putExtra("usuario_rol", rol)
                     putExtra("usuario_estado", estado)

@@ -17,7 +17,7 @@
         android:paddingTop="32dp"
         android:paddingEnd="20dp"
         android:paddingBottom="32dp"
-        tools:context=".dashboard">
+        tools:context=".dashboardAdmin">
 
         <TextView
             android:id="@+id/tv_bienvenida"

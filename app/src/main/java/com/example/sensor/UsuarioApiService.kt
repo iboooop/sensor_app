@@ -19,7 +19,7 @@ class UsuarioApiService(ctx: Context) {
     private val TAG = "UsuarioApi"
 
     // =================================================================
-    // SECCIÓN: AUTENTICACIÓN Y GESTIÓN DE USUARIOS
+    // SECCIÓN: AUTENTICACIÓN
     // =================================================================
 
     /** LOGIN */
@@ -61,6 +61,10 @@ class UsuarioApiService(ctx: Context) {
         ).apply { retryPolicy = DefaultRetryPolicy(15000, 1, 1.0f) }
         q.add(req)
     }
+
+    // =================================================================
+    // SECCIÓN: GESTIÓN DE USUARIOS
+    // =================================================================
 
     /** REGISTRAR USUARIO */
     fun ingresarUsuario(
@@ -183,6 +187,43 @@ class UsuarioApiService(ctx: Context) {
         q.add(req)
     }
 
+    // =================================================================
+    // SECCIÓN: GESTIÓN DE SENSORES (NUEVO)
+    // =================================================================
+
+    /** LISTAR SENSORES */
+    fun listarSensores(onSuccess: (List<Sensor>) -> Unit, onError: (String) -> Unit) {
+        val url = "$baseUrl/listar_sensores.php"
+        val req = JsonObjectRequest(Request.Method.GET, url, null,
+            { r ->
+                try {
+                    val arr = r.getJSONArray("sensores")
+                    val out = ArrayList<Sensor>()
+                    for (i in 0 until arr.length()) {
+                        val o = arr.getJSONObject(i)
+                        out.add(
+                            Sensor(
+                                id = o.optInt("id", 0),
+                                codigo = o.optString("codigo", ""),
+                                estado = o.optString("estado", ""),
+                                tipo = o.optString("tipo", ""),
+                                fechaAlta = o.optString("fecha_alta", ""),
+                                departamentoNombre = o.optString("departamento", "")
+                            )
+                        )
+                    }
+                    onSuccess(out)
+                } catch (e: Exception) { onError("Error parseando sensores") }
+            },
+            { onError("Error de conexión sensores") }
+        )
+        q.add(req)
+    }
+
+    // =================================================================
+    // SECCIÓN: AUXILIARES (DEPARTAMENTOS)
+    // =================================================================
+
     /** LISTAR DEPARTAMENTOS */
     fun listarDepartamentos(onSuccess: (List<Departamento>) -> Unit, onError: (String) -> Unit) {
         val url = "$baseUrl/listar_departamentos.php"
@@ -204,7 +245,7 @@ class UsuarioApiService(ctx: Context) {
     }
 
     // =================================================================
-    // SECCIÓN: RECUPERACIÓN DE CONTRASEÑA (Las que faltaban)
+    // SECCIÓN: RECUPERACIÓN DE CONTRASEÑA
     // =================================================================
 
     /** 1. ENVIAR CÓDIGO */
@@ -265,7 +306,10 @@ class UsuarioApiService(ctx: Context) {
         q.add(req)
     }
 
-    // Utilitario
+    // =================================================================
+    // UTILIDADES INTERNAS
+    // =================================================================
+
     private fun parseId(o: JSONObject?): Int {
         if (o == null) return 0
         val keys = arrayOf("id", "usuario_id", "id_usuario")
