@@ -41,7 +41,8 @@
             android:padding="10dp"
             android:textColor="#000000"
             android:textColorHint="#9AA0A6"
-            android:layout_marginBottom="12dp" />
+            android:layout_marginBottom="12dp"
+            android:autofillHints="username" />
 
         <!-- Contraseña -->
         <EditText
@@ -54,42 +55,36 @@
             android:padding="10dp"
             android:textColor="#000000"
             android:textColorHint="#9AA0A6"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"
+            android:autofillHints="password" />
 
         <!-- Botón Ingresar -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="56dp"
             android:text="INGRESAR"
             android:textColor="#fbf1cf"
             android:textStyle="bold"
             android:backgroundTint="#8DAEE1"
             android:layout_marginBottom="8dp" />
 
-        <!-- Olvidaste tu contraseña -->
+        <!-- Olvidaste tu contraseña (CORREGIDO: Touch target size) -->
         <TextView
             android:id="@+id/tvForgotPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:gravity="center_vertical"
+            android:padding="8dp"
             android:text="¿Olvidaste tu contraseña?"
             android:textColor="#7C7C7C"
             android:textSize="13sp"
+            android:textStyle="bold"
             android:layout_gravity="center"
             android:clickable="true"
             android:focusable="true"
             android:layout_marginBottom="16dp" />
-
-        <!-- Botón Registrarse -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnRegister"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:backgroundTint="#fbf1cf"
-            android:text="REGÍSTRATE"
-            android:textColor="#8DAEE1"
-            android:textStyle="bold" />
 
     </LinearLayout>
 

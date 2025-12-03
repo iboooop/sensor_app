@@ -11,33 +11,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="20dp"
-        tools:context=".ingresar">
+        tools:context=".modificar">
 
-        <ImageView
-            android:id="@+id/logo"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="16dp"
-            android:contentDescription="Logo"
-            android:src="@drawable/logosplash"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
+        <!-- Título -->
         <TextView
             android:id="@+id/tv_titulo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="CREAR USUARIO"
+            android:text="MODIFICAR USUARIO"
             android:textAlignment="center"
             android:textAllCaps="true"
             android:textColor="@color/text_primary"
-            android:textSize="16sp"
+            android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/logo" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <View
             android:id="@+id/separator"
@@ -49,14 +39,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_titulo" />
 
+        <!-- Nombres -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_nombres"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:hint="Ingrese nombres"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:hint="Nombres"
             app:layout_constraintTop_toBottomOf="@id/separator">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txtnombre"
@@ -65,14 +54,13 @@
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Apellidos -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_apellidos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Ingrese apellidos"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:hint="Apellidos"
             app:layout_constraintTop_toBottomOf="@id/til_nombres">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txtapellido"
@@ -81,14 +69,13 @@
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- RUT -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_rut"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Ingrese RUT (ej: 12345678-9)"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:hint="RUT"
             app:layout_constraintTop_toBottomOf="@id/til_apellidos">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txtrut"
@@ -97,14 +84,13 @@
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Email -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Ingrese e-mail"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:hint="Email"
             app:layout_constraintTop_toBottomOf="@id/til_rut">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txtemail"
@@ -113,14 +99,13 @@
                 android:inputType="textEmailAddress" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Teléfono -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_telefono"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Ingrese teléfono (9 dígitos)"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:hint="Teléfono"
             app:layout_constraintTop_toBottomOf="@id/til_email">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txttelefono"
@@ -130,15 +115,14 @@
                 android:maxLength="9" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Spinner Departamento -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til_departamento"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Seleccione departamento"
+            android:hint="Departamento"
             style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/til_telefono">
             <Spinner
                 android:id="@+id/spinner_departamento"
@@ -147,67 +131,28 @@
                 android:minHeight="48dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_clave"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Ingrese clave"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/til_departamento"
-            app:passwordToggleEnabled="true">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/txtclave"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_clave_rep"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Repita clave"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/til_clave"
-            app:passwordToggleEnabled="true">
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/txtrepitaclave"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword" />
-        </com.google.android.material.textfield.TextInputLayout>
-
+        <!-- Rol -->
         <TextView
-            android:id="@+id/tv_rol_label"
+            android:id="@+id/lbl_rol"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Rol:"
             android:layout_marginTop="16dp"
-            android:text="Seleccione Rol:"
-            android:textColor="#666666"
-            android:textSize="14sp"
-            app:layout_constraintTop_toBottomOf="@id/til_clave_rep"
-            app:layout_constraintStart_toStartOf="parent"/>
+            android:textColor="#666"
+            app:layout_constraintTop_toBottomOf="@id/til_departamento"/>
 
         <RadioGroup
             android:id="@+id/rg_rol"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/tv_rol_label"
-            app:layout_constraintStart_toStartOf="parent">
-
+            app:layout_constraintTop_toBottomOf="@id/lbl_rol">
             <RadioButton
                 android:id="@+id/rb_operador"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Operador"
-                android:checked="true"
                 android:layout_marginEnd="24dp"/>
-
             <RadioButton
                 android:id="@+id/rb_admin"
                 android:layout_width="wrap_content"
@@ -215,23 +160,65 @@
                 android:text="Admin" />
         </RadioGroup>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_registro"
+        <!-- Indicador de Estado Actual (Solo texto informativo) -->
+        <TextView
+            android:id="@+id/tv_estado_actual"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Estado Actual: --"
+            android:textAlignment="center"
+            android:textStyle="italic"
+            android:textColor="#888"
+            app:layout_constraintTop_toBottomOf="@id/rg_rol"/>
+
+        <!-- Botones -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp"
-            android:backgroundTint="#fbf1cf"
-            android:text="REGISTRAR"
-            android:textAllCaps="true"
-            android:textColor="#8DAEE1"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:cornerRadius="36dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/rg_rol" />
+            android:layout_marginBottom="30dp"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/tv_estado_actual"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <!-- Guardar cambios (Texto, Rol, Depto) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_modificar"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:backgroundTint="#8daee1"
+                android:text="GUARDAR CAMBIOS"
+                android:textColor="#fbf1cf"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp"
+                app:cornerRadius="36dp" />
+
+            <!-- Botón Desactivar (Rojo) - Visible solo si está activo -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_eliminar"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:backgroundTint="#F0B0C7"
+                android:text="DESACTIVAR USUARIO"
+                android:textColor="#fbf1cf"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:cornerRadius="36dp" />
+
+            <!-- Botón Activar (Verde) - Visible solo si está inactivo -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_activar"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:backgroundTint="#A5D6A7"
+                android:text="ACTIVAR USUARIO"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:cornerRadius="36dp" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

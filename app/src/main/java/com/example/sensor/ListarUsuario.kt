@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import cn.pedant.SweetAlert.SweetAlertDialog
 import java.util.Locale
 
-class listar : AppCompatActivity() {
+class ListarUsuario : AppCompatActivity() {
 
     private lateinit var rvUsuarios: RecyclerView
     private lateinit var etSearch: EditText
@@ -23,7 +23,7 @@ class listar : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_listar)
+        setContentView(R.layout.activity_listarusuario)
 
         api = UsuarioApiService(this)
         rvUsuarios = findViewById(R.id.lista_usuarios)
@@ -72,8 +72,11 @@ class listar : AppCompatActivity() {
     }
 
     private fun abrirModificar(u: Usuario) {
-        val i = Intent(this, modificar::class.java).apply {
+        // CORRECCIÓN AQUÍ: Usamos ModificarUsuario::class.java
+        val i = Intent(this, ModificarUsuario::class.java).apply {
             putExtra("usuario_id", u.id)
+            // No es estrictamente necesario pasar nombre/apellido si ModificarUsuario los vuelve a cargar por ID,
+            // pero no hace daño dejarlos.
             putExtra("usuario_nombre", u.nombre)
             putExtra("usuario_apellido", u.apellido)
             putExtra("usuario_email", u.email)

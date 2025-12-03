@@ -44,11 +44,10 @@
 
         <!-- Otras actividades -->
         <activity android:name=".dashboard" android:exported="true" />
-        <activity android:name=".opciones_crud" android:exported="true" />
-        <activity android:name=".ingresar" android:exported="false" />
+        <activity android:name=".opciones_crudusuario" android:exported="true" />
         <activity android:name=".IngresarUsuario" android:exported="false" />
-        <activity android:name=".listar" android:exported="false" />
-        <activity android:name=".modificar" android:exported="false" />
+        <activity android:name=".ListarUsuario" android:exported="false" />
+        <activity android:name=".ModificarUsuario" android:exported="false" />
         <activity android:name=".sensor" android:exported="true" />
         <activity android:name=".desarrollador" android:exported="true" />
 

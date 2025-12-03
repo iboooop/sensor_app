@@ -1,28 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/container_item"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/rounded_background"
-    android:orientation="vertical"
-    android:padding="12dp"
-    android:layout_marginVertical="6dp"
-    android:layout_marginHorizontal="4dp">
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
 
-    <TextView
-        android:id="@+id/tv_nombre"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Nombre Apellido"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/tv_email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="correo@dominio.com"
-        android:textColor="#666666"
-        android:textSize="13sp" />
-</LinearLayout>
+        <TextView
+            android:id="@+id/tv_nombre_completo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Juan Pérez"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/tv_rol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ADMIN"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="#666"
+                android:background="#E0E0E0"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:layout_marginEnd="8dp"/>
+
+            <TextView
+                android:id="@+id/tv_estado"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ACTIVO"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="#4CAF50" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="juan@email.com"
+            android:textSize="14sp"
+            android:textColor="#555" />
+
+        <TextView
+            android:id="@+id/tv_departamento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Torre A - 101"
+            android:textSize="14sp"
+            android:textStyle="italic"
+            android:textColor="#888"
+            android:drawablePadding="4dp"
+            app:drawableStartCompat="@android:drawable/ic_menu_myplaces"/>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

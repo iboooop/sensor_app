@@ -19,7 +19,6 @@
         android:paddingBottom="32dp"
         tools:context=".dashboard">
 
-        <!-- Header Bienvenida -->
         <TextView
             android:id="@+id/tv_bienvenida"
             android:layout_width="0dp"
@@ -34,7 +33,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Nombre Usuario -->
         <TextView
             android:id="@+id/tv_nombre_usuario"
             android:layout_width="0dp"
@@ -48,7 +46,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Logo -->
         <ImageView
             android:id="@+id/logo_dashboard"
             android:layout_width="140dp"
@@ -60,7 +57,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Fecha / Hora -->
         <TextView
             android:id="@+id/tv_datetime"
             android:layout_width="0dp"
@@ -74,7 +70,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Separador Visual -->
         <View
             android:id="@+id/separator"
             android:layout_width="0dp"
@@ -86,7 +81,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Título Opciones -->
         <TextView
             android:id="@+id/tv_opciones"
             android:layout_width="0dp"
@@ -102,7 +96,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Row 1 -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/row1"
             android:layout_width="0dp"
@@ -131,7 +124,7 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginEnd="24dp"
                 android:backgroundTint="#E9B3BC"
-                android:text="CRUD USUARIO"
+                android:text="GESTIÓN DE USUARIO"
                 android:textAllCaps="true"
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"
@@ -145,7 +138,6 @@
                 app:strokeWidth="3dp" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- Row 2 -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/row2"
             android:layout_width="0dp"
@@ -173,7 +165,7 @@
                 android:layout_height="56dp"
                 android:layout_marginStart="24dp"
                 android:layout_marginEnd="24dp"
-                android:text="DATOS SENSOR"
+                android:text="GESTIÓN DE SENSOR"
                 android:textAllCaps="true"
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"
@@ -188,7 +180,6 @@
                 app:strokeWidth="3dp"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- Row 3 -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/row3"
             android:layout_width="0dp"
@@ -231,7 +222,6 @@
                 app:strokeWidth="3dp"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- Logout -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_logout"
             android:layout_width="0dp"

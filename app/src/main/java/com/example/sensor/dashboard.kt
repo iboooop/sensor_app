@@ -66,7 +66,7 @@ class dashboard : AppCompatActivity() {
     }
 
     private fun setupClickListeners() {
-        btnCrudUser.setOnClickListener { startActivity(Intent(this, opciones_crud::class.java)) }
+        btnCrudUser.setOnClickListener { startActivity(Intent(this, opciones_crudusuario::class.java)) }
         btnSensor.setOnClickListener { startActivity(Intent(this, sensor::class.java)) }
         btnDeveloper.setOnClickListener { startActivity(Intent(this, desarrollador::class.java)) }
         btnLogout.setOnClickListener { confirmarLogout() } // <-- funcionalidad
