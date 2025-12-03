@@ -220,6 +220,38 @@ class UsuarioApiService(ctx: Context) {
         q.add(req)
     }
 
+    /** REGISTRAR SENSOR (NUEVO) */
+    fun ingresarSensor(
+        codigoSensor: String,
+        tipo: String,
+        estado: String,
+        idDepartamento: Int,
+        idUsuario: Int,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        val url = "$baseUrl/ingresar_sensor.php"
+        val req = object : StringRequest(Method.POST, url,
+            Response.Listener { resp ->
+                try {
+                    val r = JSONObject(resp)
+                    if (r.optBoolean("success", false) || r.optString("status") == "success") onSuccess()
+                    else onError(r.optString("message", "Error al registrar sensor"))
+                } catch (e: Exception) { onError("Error respuesta servidor") }
+            },
+            Response.ErrorListener { onError("Conexión fallida") }
+        ) {
+            override fun getParams() = hashMapOf(
+                "codigo_sensor" to codigoSensor,
+                "tipo" to tipo,
+                "estado" to estado,
+                "id_departamento" to idDepartamento.toString(),
+                "id_usuario" to idUsuario.toString()
+            )
+        }
+        q.add(req)
+    }
+
     // =================================================================
     // SECCIÓN: AUXILIARES (DEPARTAMENTOS)
     // =================================================================

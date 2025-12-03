@@ -19,27 +19,11 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
-        <!-- GESTIÓN DE SENSORES (NUEVO) -->
-        <!-- Corrección: OpcionesCrudSensor con mayúsculas para coincidir con la clase -->
-        <activity
-            android:name=".OpcionesCrudSensor"
-            android:exported="false" />
-        <activity
-            android:name=".ListarSensor"
-            android:exported="false" />
-        <!-- Puedes agregar .IngresarSensor aquí cuando lo crees -->
-        <!-- <activity android:name=".IngresarSensor" android:exported="false" /> -->
+        <!-- ==========================================
+             INICIO Y NAVEGACIÓN PRINCIPAL
+             ========================================== -->
 
-
-        <!-- RECUPERACIÓN DE CONTRASEÑA -->
-        <activity
-            android:name=".RecuperarContraseniaActivity"
-            android:exported="false" />
-        <activity
-            android:name=".CrearContraseniaActivity"
-            android:exported="false" />
-
-        <!-- SPLASH (LAUNCHER) -->
+        <!-- SPLASH (LAUNCHER) - Única actividad exportada -->
         <activity
             android:name=".SplashActivity"
             android:exported="true">
@@ -49,32 +33,71 @@
             </intent-filter>
         </activity>
 
-        <!-- MAIN (LOGIN) -->
+        <!-- LOGIN -->
         <activity
             android:name=".MainActivity"
-            android:exported="true" />
+            android:exported="false" />
 
-        <!-- DASHBOARD Y OTRAS -->
+        <!-- DASHBOARD PRINCIPAL -->
         <activity
             android:name=".dashboardAdmin"
-            android:exported="true" />
+            android:exported="false" />
+
+        <!-- CRÉDITOS / INFO -->
+        <activity
+            android:name=".desarrollador"
+            android:exported="false" />
+
+
+        <!-- ==========================================
+             MÓDULO DE USUARIOS
+             ========================================== -->
+
         <activity
             android:name=".opciones_crudusuario"
-            android:exported="true" />
+            android:exported="false" />
+
         <activity
             android:name=".IngresarUsuario"
             android:exported="false" />
+
         <activity
             android:name=".ListarUsuario"
             android:exported="false" />
+
         <activity
             android:name=".ModificarUsuario"
             android:exported="false" />
 
-        <!-- Actividades antiguas o utilitarias -->
+
+        <!-- ==========================================
+             MÓDULO DE SENSORES
+             ========================================== -->
+
         <activity
-            android:name=".desarrollador"
-            android:exported="true" />
+            android:name=".OpcionesCrudSensor"
+            android:exported="false" />
+
+        <activity
+            android:name=".IngresarSensor"
+            android:exported="false" />
+
+        <activity
+            android:name=".ListarSensor"
+            android:exported="false" />
+
+
+        <!-- ==========================================
+             RECUPERACIÓN DE CONTRASEÑA
+             ========================================== -->
+
+        <activity
+            android:name=".RecuperarContraseniaActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".CrearContraseniaActivity"
+            android:exported="false" />
 
     </application>
 

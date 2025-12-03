@@ -13,7 +13,7 @@ class OpcionesCrudSensor : AppCompatActivity() {
         // Configurar botón INGRESAR SENSOR
         findViewById<MaterialButton>(R.id.btn_ingresar_sensor).setOnClickListener {
             // Cuando tengas IngresarSensor, descomenta esta línea:
-            // startActivity(Intent(this, IngresarSensor::class.java))
+             startActivity(Intent(this, IngresarSensor::class.java))
         }
 
         // Configurar botón LISTAR SENSORES
