@@ -13,15 +13,17 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Código del Sensor -->
         <TextView
-            android:id="@+id/tv_nombre_completo"
+            android:id="@+id/tv_codigo_sensor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Juan Pérez"
+            android:text="SENSOR-001"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary" />
 
+        <!-- Tipo y Estado -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -29,10 +31,10 @@
             android:layout_marginTop="4dp">
 
             <TextView
-                android:id="@+id/tv_rol"
+                android:id="@+id/tv_tipo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ADMIN"
+                android:text="LLAVERO"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:textColor="#666"
@@ -53,26 +55,41 @@
                 android:textColor="#4CAF50" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tv_email"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="juan@email.com"
-            android:textSize="14sp"
-            android:textColor="#555" />
-
+        <!-- Departamento Asignado -->
         <TextView
             android:id="@+id/tv_departamento"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="8dp"
             android:text="Torre A - 101"
             android:textSize="14sp"
             android:textStyle="italic"
             android:textColor="#888"
             android:drawablePadding="4dp"
             app:drawableStartCompat="@android:drawable/ic_menu_myplaces"/>
+
+        <!-- Usuario Asignado (NUEVO) -->
+        <TextView
+            android:id="@+id/tv_usuario_asignado"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Usuario: Juan Pérez"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#5C6BC0"
+            android:drawablePadding="4dp"
+            app:drawableStartCompat="@android:drawable/ic_menu_agenda"/>
+
+        <!-- Fecha de Alta -->
+        <TextView
+            android:id="@+id/tv_fecha"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Registrado: 2023-10-01"
+            android:textSize="12sp"
+            android:textColor="#AAA" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

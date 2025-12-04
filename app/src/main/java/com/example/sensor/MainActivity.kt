@@ -4,64 +4,59 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app. AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton
-import cn.pedant.SweetAlert. SweetAlertDialog
+import cn.pedant.SweetAlert.SweetAlertDialog
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var etUser: EditText
     private lateinit var etPassword: EditText
     private lateinit var btnLogin: MaterialButton
-    private lateinit var btnRegister: MaterialButton
     private lateinit var api: UsuarioApiService
 
     private var lastWarnAt = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super. onCreate(savedInstanceState)
+        super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_main) // Asegúrate de que este sea el nombre correcto de tu XML
 
+        // Aplica insets al root real del layout: login_layout
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.login_layout)) { v, insets ->
-            val sys = insets.getInsets(WindowInsetsCompat.Type. systemBars())
-            v. setPadding(sys.left, sys.top, sys.right, sys.bottom)
+            val sys = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(sys.left, sys.top, sys.right, sys.bottom)
             insets
         }
 
         // Si ya hay sesión, ir directo al dashboard
         SessionManager.getFullName(this)?.let {
             if (it.isNotBlank()) {
-                startActivity(Intent(this, dashboard::class. java))
+                startActivity(Intent(this, dashboardAdmin::class.java))
                 finish()
                 return
             }
-            startActivity(intent)
-            finish()
-            return // Evita que el resto del onCreate se ejecute
         }
 
         api = UsuarioApiService(this)
-        etUser = findViewById(R. id.etUser)
-        etPassword = findViewById(R.id. etPassword)
+        etUser = findViewById(R.id.etUser)
+        etPassword = findViewById(R.id.etPassword)
         btnLogin = findViewById(R.id.btnLogin)
-        btnRegister = findViewById(R.id.btnRegister)
 
         btnLogin.setOnClickListener { intentarLogin() }
-        btnRegister.setOnClickListener {
-            startActivity(Intent(this, ingresar::class.java))
+
+        // Olvidaste tu contraseña → RecuperarContraseniaActivity
+        findViewById<TextView>(R.id.tvForgotPassword).setOnClickListener {
+            startActivity(Intent(this, RecuperarContraseniaActivity::class.java))
         }
 
-        findViewById<android.widget.TextView>(R.id.tvForgotPassword).setOnClickListener {
-            // Asumo que tienes una actividad para esto. Si no, crea el archivo.
-            // startActivity(Intent(this, RecuperarContraseniaActivity::class.java))
-        }
-
+        // Enviar con "Enter" desde la contraseña
         etPassword.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo. IME_ACTION_DONE) {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
                 intentarLogin()
                 true
             } else {
@@ -71,8 +66,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun intentarLogin() {
-        val correo = etUser.text. toString().trim()
-        val pass = etPassword.text.toString(). trim()
+        val correo = etUser.text.toString().trim()
+        val pass = etPassword.text.toString().trim()
 
         if (correo.isEmpty() || pass.isEmpty()) {
             showWarnOnce("Faltan datos", "Ingresa correo y contraseña")
@@ -80,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         setLoading(true)
-        api. login(
+        api.login(
             correo = correo,
             password = pass,
             onSuccess = { id, nombres, apellidos, email, rol, estado ->
@@ -94,7 +89,7 @@ class MainActivity : AppCompatActivity() {
                     else -> "Bienvenido"
                 }
 
-                val i = Intent(this, dashboard::class.java).apply {
+                val i = Intent(this, dashboardAdmin::class.java).apply {
                     putExtra("usuario_nombre", "$nombres $apellidos")
                     putExtra("usuario_rol", rol)
                     putExtra("usuario_estado", estado)
@@ -105,14 +100,14 @@ class MainActivity : AppCompatActivity() {
                 // Mostrar mensaje de bienvenida con SweetAlert
                 SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
                     .setTitleText(mensaje)
-                    . setContentText("$nombres $apellidos")
+                    .setContentText("$nombres $apellidos")
                     .setConfirmText("Continuar")
                     .setConfirmClickListener {
                         it.dismissWithAnimation()
                         startActivity(i)
                         finish()
                     }
-                    . show()
+                    .show()
             },
             onError = { msg ->
                 setLoading(false)
@@ -120,7 +115,7 @@ class MainActivity : AppCompatActivity() {
                 // Mostrar error específico según el mensaje
                 val (titulo, contenido) = when {
                     msg.contains("inactivo", ignoreCase = true) ->
-                        "Usuario Inactivo" to "Tu cuenta está desactivada.  Contacta al administrador."
+                        "Usuario Inactivo" to "Tu cuenta está desactivada. Contacta al administrador."
                     msg.contains("contraseña", ignoreCase = true) || msg.contains("incorrecta", ignoreCase = true) ->
                         "Contraseña Incorrecta" to "Verifica tu contraseña e intenta nuevamente."
                     msg.contains("no encontrado", ignoreCase = true) ->
@@ -138,34 +133,26 @@ class MainActivity : AppCompatActivity() {
 
     private fun setLoading(b: Boolean) {
         btnLogin.isEnabled = !b
-        btnRegister.isEnabled = !b
         etUser.isEnabled = !b
         etPassword.isEnabled = !b
     }
 
+    // SweetAlert helpers
     private fun showWarnOnce(title: String, content: String) {
         val now = System.currentTimeMillis()
-        if (now - lastWarnAt < 1500) return
+        if (now - lastWarnAt < 1500) return // antirebote 1.5s
         lastWarnAt = now
-        SweetAlertDialog(this, SweetAlertDialog. WARNING_TYPE)
-            .setTitleText(title)
-            .setContentText(content)
-            .setConfirmText("OK")
-            . show()
-    }
-
-    private fun showError(title: String, content: String) {
-        SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
+        SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
             .setTitleText(title)
             .setContentText(content)
             .setConfirmText("OK")
             .show()
     }
 
-    private fun showInfo(title: String, content: String) {
-        SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE)
+    private fun showError(title: String, content: String) {
+        SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
             .setTitleText(title)
-            . setContentText(content)
+            .setContentText(content)
             .setConfirmText("OK")
             .show()
     }

@@ -15,16 +15,14 @@ import java.util.Date
 import java.util.Locale
 import cn.pedant.SweetAlert.SweetAlertDialog
 
-class AdminDashboardActivity : AppCompatActivity() {
+class dashboardAdmin : AppCompatActivity() {
 
-    // Vistas del Admin Dashboard
+    private lateinit var tvBienvenida: TextView
     private lateinit var tvNombreUsuario: TextView
-    private lateinit var tvDepartamentoInfo: TextView
     private lateinit var tvDateTime: TextView
-    private lateinit var btnGestionarUsuarios: MaterialButton
-    private lateinit var btnGestionarSensores: MaterialButton
-    private lateinit var btnHistorialAccesos: MaterialButton
-    private lateinit var btnControlManual: MaterialButton
+    private lateinit var btnCrudUser: MaterialButton
+    private lateinit var btnSensor: MaterialButton
+    private lateinit var btnDeveloper: MaterialButton
     private lateinit var btnLogout: MaterialButton
 
     private val mHandler = Handler(Looper.getMainLooper())
@@ -33,10 +31,9 @@ class AdminDashboardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        // Cargar el layout del dashboard de ADMIN
-        setContentView(R.layout.activity_admin_dashboard)
+        setContentView(R.layout.activity_dashboardadmin) // Asegúrate que este sea el nombre correcto de tu XML (dashboard.xml o activity_dashboard.xml)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main_admin_dashboard)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main_dashboard)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -49,41 +46,43 @@ class AdminDashboardActivity : AppCompatActivity() {
     }
 
     private fun initializeViews() {
+        tvBienvenida = findViewById(R.id.tv_bienvenida)
         tvNombreUsuario = findViewById(R.id.tv_nombre_usuario)
-        tvDepartamentoInfo = findViewById(R.id.tv_departamento_info) // Vista para info depto
         tvDateTime = findViewById(R.id.tv_datetime)
-
-        // Referenciar los botones del layout de admin
-        btnGestionarUsuarios = findViewById(R.id.btn_gestionar_usuarios)
-        btnGestionarSensores = findViewById(R.id.btn_gestionar_sensores)
-        btnHistorialAccesos = findViewById(R.id.btn_historial_accesos)
-        btnControlManual = findViewById(R.id.btn_control_manual)
+        btnCrudUser = findViewById(R.id.btn_crud_user)
+        btnSensor = findViewById(R.id.btn_sensor)
+        btnDeveloper = findViewById(R.id.btn_developer)
         btnLogout = findViewById(R.id.btn_logout)
     }
 
     private fun cargarDatosUsuario() {
-        // La lógica para obtener el nombre de usuario es la misma
-        val nombreSesion = SessionManager.getFullName(this) ?: "Admin"
-        tvNombreUsuario.text = nombreSesion
-
-        // Aquí podrías cargar la info del departamento desde la sesión en el futuro
-        // Por ahora, usamos un texto de ejemplo.
-        tvDepartamentoInfo.text = "Departamento: 101-A"
+        val nombreDirecto = intent.getStringExtra("usuario_nombre")?.takeIf { it.isNotBlank() }
+        val nombresExtra = intent.getStringExtra("nombres")?.trim().orEmpty()
+        val apellidosExtra = intent.getStringExtra("apellidos")?.trim().orEmpty()
+        val nombreCombinadoExtras = "$nombresExtra $apellidosExtra".trim().takeIf { it.isNotBlank() }
+        val nombreSesion = SessionManager.getFullName(this)?.takeIf { it.isNotBlank() }
+        val nombreParaMostrar = nombreDirecto ?: nombreCombinadoExtras ?: nombreSesion ?: "Usuario"
+        tvNombreUsuario.text = nombreParaMostrar
     }
 
     private fun setupClickListeners() {
-        // Asignar acciones a los nuevos botones
-        btnGestionarUsuarios.setOnClickListener { startActivity(Intent(this, opciones_crud::class.java)) }
-        btnGestionarSensores.setOnClickListener { startActivity(Intent(this, sensor::class.java)) }
-
-        // TODO: Crear y enlazar las actividades para Historial y Control Manual
-        btnHistorialAccesos.setOnClickListener {
-            // startActivity(Intent(this, HistorialAccesosActivity::class.java))
-        }
-        btnControlManual.setOnClickListener {
-            // startActivity(Intent(this, ControlManualActivity::class.java))
+        // Botón Gestión de Usuarios
+        btnCrudUser.setOnClickListener {
+            // Asegúrate de usar el nombre correcto de la clase (revisamos que sea con mayúscula si la cambiaste)
+            startActivity(Intent(this, opciones_crudusuario::class.java))
         }
 
+        // Botón Gestión de Sensores -> Ahora va a OpcionesCrudSensor
+        btnSensor.setOnClickListener {
+            startActivity(Intent(this, OpcionesCrudSensor::class.java))
+        }
+
+        // Botón Desarrollador
+        btnDeveloper.setOnClickListener {
+            startActivity(Intent(this, desarrollador::class.java))
+        }
+
+        // Botón Salir
         btnLogout.setOnClickListener { confirmarLogout() }
     }
 
@@ -95,8 +94,11 @@ class AdminDashboardActivity : AppCompatActivity() {
             .setConfirmText("Cerrar sesión")
             .setConfirmClickListener {
                 it.dismissWithAnimation()
-                // Usamos el método centralizado de SessionManager
-                SessionManager.logoutAndGoToLogin(this)
+                SessionManager.clear(this)
+                val i = Intent(this, MainActivity::class.java)
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                startActivity(i)
+                finish()
             }
             .setCancelClickListener { dialog -> dialog.dismissWithAnimation() }
             .show()

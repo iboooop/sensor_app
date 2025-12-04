@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="20dp"
-        tools:context=".Opciones_crud">
+        tools:context=".OpcionesCrudSensor">
 
         <!-- Logo -->
         <ImageView
@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="GESTIÓN DE USUARIOS"
+            android:text="GESTIÓN DE SENSORES"
             android:textAlignment="center"
             android:textAllCaps="true"
             android:textColor="@color/text_primary"
@@ -52,14 +52,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_titulo" />
 
-        <!-- Botón INGRESAR USUARIOS -->
+        <!-- Botón INGRESAR SENSOR -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_ingresar_usuarios"
+            android:id="@+id/btn_ingresar_sensor"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginTop="40dp"
             android:backgroundTint="#fbf1cf"
-            android:text="INGRESAR USUARIOS"
+            android:text="INGRESAR SENSOR"
             android:textAllCaps="true"
             android:textColor="#6a95d6"
             android:textSize="16sp"
@@ -69,15 +69,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/separator" />
 
-        <!-- Botón LISTAR USUARIOS -->
+        <!-- Botón LISTAR SENSORES -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_listar_usuarios"
+            android:id="@+id/btn_listar_sensores"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginTop="20dp"
             android:layout_marginBottom="40dp"
             android:backgroundTint="#8daee1"
-            android:text="LISTAR USUARIOS"
+            android:text="LISTAR SENSORES"
             android:textAllCaps="true"
             android:textColor="@android:color/white"
             android:textSize="16sp"
@@ -86,8 +86,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_ingresar_usuarios" />
+            app:layout_constraintTop_toBottomOf="@id/btn_ingresar_sensor" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </ScrollView>
