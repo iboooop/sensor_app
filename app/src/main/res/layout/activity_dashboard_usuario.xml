@@ -175,7 +175,7 @@
                 android:id="@+id/icon_control_manual"
                 android:layout_width="72dp"
                 android:layout_height="72dp"
-                android:src="@drawable/control_manual"
+                android:src="@drawable/controlmanual"
                 tools:src="@android:drawable/ic_menu_send"
                 android:contentDescription="Icono Control Manual"
                 app:layout_constraintTop_toTopOf="parent"

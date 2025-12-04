@@ -3,4 +3,12 @@
     <color name="black">#FF000000</color>
     <color name="text_primary">#333333</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- ===== AGREGA ESTOS NUEVOS COLORES ===== -->
+    <color name="button_bg_light_blue">#A9D4FF</color> <!-- Celeste del personaje -->
+    <color name="button_text_dark_blue">#2A3B4D</color> <!-- Texto oscuro para fondo celeste -->
+
+    <color name="button_bg_cream">#FFF5D1</color>      <!-- Crema de la nube -->
+    <color name="button_text_dark_brown">#5D4037</color>   <!-- Texto oscuro para fondo crema -->
+    <!-- ======================================= -->
 </resources>

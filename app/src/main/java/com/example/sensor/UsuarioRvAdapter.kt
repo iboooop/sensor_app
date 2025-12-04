@@ -4,12 +4,15 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
 
+// 1. CAMBIO: El constructor ahora recibe dos acciones en lugar de una.
 class UsuarioRvAdapter(
-    private val onClick: (Usuario) -> Unit
+    private val onEditClick: (Usuario) -> Unit,
+    private val onEventsClick: (Usuario) -> Unit
 ) : RecyclerView.Adapter<UsuarioRvAdapter.Vh>() {
 
     private var lista = listOf<Usuario>()
@@ -31,13 +34,21 @@ class UsuarioRvAdapter(
     override fun getItemCount() = lista.size
 
     inner class Vh(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        // --- Tu código existente se mantiene ---
         private val tvNombre: TextView = itemView.findViewById(R.id.tv_nombre_completo)
         private val tvRol: TextView = itemView.findViewById(R.id.tv_rol)
         private val tvEstado: TextView = itemView.findViewById(R.id.tv_estado)
         private val tvEmail: TextView = itemView.findViewById(R.id.tv_email)
         private val tvDepto: TextView = itemView.findViewById(R.id.tv_departamento)
+        // ------------------------------------
+
+        // 2. AÑADIDO: Referencias a los dos botones.
+        private val btnEditar: Button = itemView.findViewById(R.id.btn_editar)
+        private val btnVerEventos: Button = itemView.findViewById(R.id.btn_ver_eventos)
+
 
         fun bind(u: Usuario) {
+            // --- Tu lógica para poner los datos se mantiene intacta ---
             tvNombre.text = "${u.nombre} ${u.apellido}"
             tvEmail.text = u.email
 
@@ -59,8 +70,12 @@ class UsuarioRvAdapter(
             } else {
                 tvDepto.visibility = View.GONE
             }
+            // --------------------------------------------------------
 
-            itemView.setOnClickListener { onClick(u) }
+            // 3. CAMBIO: Se elimina el listener del item completo y se añaden los de los botones.
+            // itemView.setOnClickListener { onClick(u) } // Se elimina esta línea
+            btnEditar.setOnClickListener { onEditClick(u) }
+            btnVerEventos.setOnClickListener { onEventsClick(u) }
         }
     }
 }

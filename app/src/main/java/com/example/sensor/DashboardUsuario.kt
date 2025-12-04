@@ -32,7 +32,7 @@ class UserDashboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         // Cargar el layout del dashboard de USUARIO
-        setContentView(R.layout.activity_user_dashboard)
+        setContentView(R.layout.activity_dashboard_usuario)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main_user_dashboard)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())

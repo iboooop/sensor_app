@@ -30,7 +30,15 @@ class ListarUsuario : AppCompatActivity() {
         etSearch = findViewById(R.id.search_usuarios)
 
         rvUsuarios.layoutManager = LinearLayoutManager(this)
-        adapter = UsuarioRvAdapter { u -> abrirModificar(u) }
+
+        // ===== CORRECCIÓN AQUÍ =====
+        // El parámetro ahora se llama "onEventsClick", igual que en el constructor del Adapter.
+        adapter = UsuarioRvAdapter(
+            onEditClick = { usuario -> abrirModificar(usuario) },
+            onEventsClick = { usuario -> abrirListarEventos(usuario) }
+        )
+        // ============================
+
         rvUsuarios.adapter = adapter
 
         etSearch.addTextChangedListener(object : TextWatcher {
@@ -40,6 +48,7 @@ class ListarUsuario : AppCompatActivity() {
         })
     }
 
+    // El resto de tu código es perfecto y no necesita cambios.
     override fun onStart() {
         super.onStart()
         cargar()
@@ -72,14 +81,18 @@ class ListarUsuario : AppCompatActivity() {
     }
 
     private fun abrirModificar(u: Usuario) {
-        // CORRECCIÓN AQUÍ: Usamos ModificarUsuario::class.java
         val i = Intent(this, ModificarUsuario::class.java).apply {
             putExtra("usuario_id", u.id)
-            // No es estrictamente necesario pasar nombre/apellido si ModificarUsuario los vuelve a cargar por ID,
-            // pero no hace daño dejarlos.
             putExtra("usuario_nombre", u.nombre)
             putExtra("usuario_apellido", u.apellido)
             putExtra("usuario_email", u.email)
+        }
+        startActivity(i)
+    }
+
+    private fun abrirListarEventos(u: Usuario) {
+        val i = Intent(this, ListarEventosActivity::class.java).apply {
+            putExtra("usuario_id", u.id)
         }
         startActivity(i)
     }
