@@ -17,7 +17,6 @@ import cn.pedant.SweetAlert.SweetAlertDialog
 
 class UserDashboardActivity : AppCompatActivity() {
 
-    // Vistas del User Dashboard
     private lateinit var tvNombreUsuario: TextView
     private lateinit var tvDepartamentoInfo: TextView
     private lateinit var tvDateTime: TextView
@@ -31,8 +30,7 @@ class UserDashboardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        // Cargar el layout del dashboard de USUARIO
-        setContentView(R.layout.activity_user_dashboard)
+        setContentView(R.layout.activity_dashboard_usuario)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main_user_dashboard)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -50,8 +48,6 @@ class UserDashboardActivity : AppCompatActivity() {
         tvNombreUsuario = findViewById(R.id.tv_nombre_usuario)
         tvDepartamentoInfo = findViewById(R.id.tv_departamento_info)
         tvDateTime = findViewById(R.id.tv_datetime)
-
-        // Referenciar los botones del layout de usuario
         btnHistorialAccesos = findViewById(R.id.btn_historial_accesos)
         btnControlManual = findViewById(R.id.btn_control_manual)
         btnLogout = findViewById(R.id.btn_logout)
@@ -61,20 +57,18 @@ class UserDashboardActivity : AppCompatActivity() {
         val nombreSesion = SessionManager.getFullName(this) ?: "Usuario"
         tvNombreUsuario.text = nombreSesion
 
-        // La información del departamento se puede obtener de la sesión si se guarda
+        // Cambia esto si tu SessionManager guarda el departamento
         tvDepartamentoInfo.text = "Departamento: 101-A"
     }
 
     private fun setupClickListeners() {
-        // Asignar acciones a los botones del usuario operador
-        // TODO: Crear y enlazar las actividades para Historial y Control Manual
         btnHistorialAccesos.setOnClickListener {
-            // startActivity(Intent(this, HistorialAccesosActivity::class.java))
+            startActivity(Intent(this, HistorialAccesoActivity::class.java))
         }
         btnControlManual.setOnClickListener {
+            // Crea ControlManualActivity si no existe, o comenta si no lo necesitas aún
             // startActivity(Intent(this, ControlManualActivity::class.java))
         }
-
         btnLogout.setOnClickListener { confirmarLogout() }
     }
 

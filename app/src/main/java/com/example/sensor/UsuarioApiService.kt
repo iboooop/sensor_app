@@ -14,7 +14,7 @@ import org.json.JSONObject
 class UsuarioApiService(ctx: Context) {
 
     private val q: RequestQueue = Volley.newRequestQueue(ctx)
-    // ⚠️ VERIFICA TU IP
+    // ⚠️ VERIFICA TU IP SIEMPRE. Si usas emulador suele ser 10.0.2.2, si es dispositivo físico usa la IP de tu PC
     private val baseUrl = "http://100.25.170.26"
     private val TAG = "UsuarioApi"
 
@@ -25,7 +25,7 @@ class UsuarioApiService(ctx: Context) {
     fun login(
         correo: String,
         password: String,
-        onSuccess: (id: Int, nombres: String, apellidos: String, email: String, rol: String, estado: String) -> Unit,
+        onSuccess: (id: Int, nombres: String, apellidos: String, email: String, rol: String, estado: String, idDepto: Int) -> Unit,
         onError: (String) -> Unit
     ) {
         val url = "$baseUrl/login.php"
@@ -46,17 +46,18 @@ class UsuarioApiService(ctx: Context) {
                             val email = u.optString("correo", "")
                             val rol = u.optString("rol", "operador")
                             val estado = u.optString("estado", "activo")
+                            val idDepto = u.optInt("id_departamento", 0)
 
                             if (estado == "inactivo") {
                                 onError("Usuario inactivo. Contacte al administrador")
                             } else {
-                                onSuccess(id, nombres, apellidos, email, rol, estado)
+                                onSuccess(id, nombres, apellidos, email, rol, estado, idDepto)
                             }
                         } else onError("Datos incompletos")
                     } else onError(r.optString("message", "Credenciales incorrectas"))
                 } catch (e: Exception) { onError("Error procesando respuesta") }
             },
-            { onError("Error de conexión") }
+            { error -> onError("Error de conexión") }
         ).apply { retryPolicy = DefaultRetryPolicy(15000, 1, 1.0f) }
         q.add(req)
     }
@@ -186,7 +187,6 @@ class UsuarioApiService(ctx: Context) {
     // SECCIÓN: GESTIÓN DE SENSORES
     // =================================================================
 
-    // Listar usuarios filtrados por departamento (para Spinners)
     fun listarUsuariosPorDepto(idDepto: Int, onSuccess: (List<Usuario>) -> Unit, onError: (String) -> Unit) {
         val url = "$baseUrl/listar_usuarios_por_depto.php?id_departamento=$idDepto"
         val req = JsonObjectRequest(Request.Method.GET, url, null,
@@ -201,10 +201,7 @@ class UsuarioApiService(ctx: Context) {
                                 id = o.optInt("id", 0),
                                 nombre = o.optString("nombres", ""),
                                 apellido = o.optString("apellidos", ""),
-                                email = "", // Datos no necesarios para spinner
-                                rol = "",
-                                estado = "activo",
-                                departamentoNombre = ""
+                                email = "", rol = "", estado = "activo", departamentoNombre = ""
                             )
                         )
                     }
@@ -216,7 +213,6 @@ class UsuarioApiService(ctx: Context) {
         q.add(req)
     }
 
-    // Listar Sensores (StringRequest para mejor manejo de errores)
     fun listarSensores(onSuccess: (List<Sensor>) -> Unit, onError: (String) -> Unit) {
         val url = "$baseUrl/listar_sensores.php"
         val req = StringRequest(Request.Method.GET, url,
@@ -253,15 +249,9 @@ class UsuarioApiService(ctx: Context) {
         q.add(req)
     }
 
-    // Registrar Sensor (ENVÍA JSON)
     fun ingresarSensor(
-        codigoSensor: String,
-        tipo: String,
-        estado: String,
-        idDepartamento: Int,
-        idUsuario: Int,
-        onSuccess: () -> Unit,
-        onError: (String) -> Unit
+        codigoSensor: String, tipo: String, estado: String, idDepartamento: Int, idUsuario: Int,
+        onSuccess: () -> Unit, onError: (String) -> Unit
     ) {
         val url = "$baseUrl/ingresar_sensor.php"
         val jsonBody = JSONObject().apply {
@@ -282,23 +272,14 @@ class UsuarioApiService(ctx: Context) {
                     }
                 } catch (e: Exception) { onError("Error respuesta servidor") }
             },
-            { error ->
-                onError("Error Red: ${error.message}")
-            }
+            { error -> onError("Error Red: ${error.message}") }
         )
         q.add(req)
     }
 
-    // Modificar Sensor Completo (Botón Guardar Cambios)
     fun modificarSensor(
-        idSensor: Int,
-        codigo: String,
-        tipo: String,
-        estado: String,
-        idDepartamento: Int,
-        idUsuario: Int,
-        onSuccess: () -> Unit,
-        onError: (String) -> Unit
+        idSensor: Int, codigo: String, tipo: String, estado: String, idDepartamento: Int, idUsuario: Int,
+        onSuccess: () -> Unit, onError: (String) -> Unit
     ) {
         val url = "$baseUrl/actualizar_sensor.php"
         val jsonBody = JSONObject().apply {
@@ -320,19 +301,13 @@ class UsuarioApiService(ctx: Context) {
                     }
                 } catch (e: Exception) { onError("Error respuesta servidor") }
             },
-            { error ->
-                onError("Error de conexión: ${error.networkResponse?.statusCode ?: 0}")
-            }
+            { error -> onError("Error de conexión: ${error.networkResponse?.statusCode ?: 0}") }
         )
         q.add(req)
     }
 
-    // NUEVA: Cambiar solo estado (Botones rápidos)
     fun cambiarEstadoSensor(
-        idSensor: Int,
-        nuevoEstado: String,
-        onSuccess: () -> Unit,
-        onError: (String) -> Unit
+        idSensor: Int, nuevoEstado: String, onSuccess: () -> Unit, onError: (String) -> Unit
     ) {
         val url = "$baseUrl/actualizar_estado_sensor.php"
         val jsonBody = JSONObject().apply {
@@ -348,6 +323,113 @@ class UsuarioApiService(ctx: Context) {
             { error ->
                 val code = error.networkResponse?.statusCode ?: 0
                 onError("Error de conexión: $code")
+            }
+        )
+        q.add(req)
+    }
+
+    // =================================================================
+    // SECCIÓN: HISTORIAL DE EVENTOS (CON MANEJO DE ERRORES MEJORADO)
+    // =================================================================
+
+    fun listarEventos(idUsuario: Int = 0, onSuccess: (List<Evento>) -> Unit, onError: (String) -> Unit) {
+        val url = "$baseUrl/listar_eventos_acceso.php?id_usuario=$idUsuario"
+
+        val req = JsonObjectRequest(Request.Method.GET, url, null,
+            { r ->
+                // Verificar si el servidor mandó error lógico (BD explotó)
+                if (r.has("status") && r.getString("status") == "error") {
+                    onError(r.optString("message", "Error desconocido del servidor"))
+                    return@JsonObjectRequest
+                }
+
+                try {
+                    val arr = r.optJSONArray("eventos") ?: org.json.JSONArray()
+                    val lista = ArrayList<Evento>()
+                    for (i in 0 until arr.length()) {
+                        val o = arr.getJSONObject(i)
+                        lista.add(
+                            Evento(
+                                id = o.optInt("id"),
+                                tipo = o.optString("tipo"),
+                                resultado = o.optString("resultado"),
+                                fecha = o.optString("fecha"),
+                                usuarioNombre = o.optString("usuario"),
+                                sensorCodigo = o.optString("sensor")
+                            )
+                        )
+                    }
+                    onSuccess(lista)
+                } catch (e: Exception) {
+                    onError("Error parseando JSON: ${e.message}")
+                }
+            },
+            { error ->
+                // Captura errores HTTP (404, 500) y muestra el cuerpo de la respuesta
+                val response = error.networkResponse
+                if (response != null && response.data != null) {
+                    try {
+                        val errorString = String(response.data, Charsets.UTF_8)
+                        // Intentamos ver si es un JSON de error o texto plano (HTML de error de PHP)
+                        if (errorString.contains("Error SQL")) {
+                            onError("Error SQL Sever: $errorString")
+                        } else {
+                            onError("Error ${response.statusCode}. Revise el log.")
+                            Log.e(TAG, "Error Body: $errorString")
+                        }
+                    } catch (e: Exception) {
+                        onError("Error ${response.statusCode}")
+                    }
+                } else {
+                    onError("Error de red: ${error.message ?: "Sin respuesta"}")
+                }
+            }
+        )
+        q.add(req)
+    }
+
+    fun listarEventosPorDepartamento(idDepto: Int, onSuccess: (List<Evento>) -> Unit, onError: (String) -> Unit) {
+        val url = "$baseUrl/listar_eventos_acceso.php?id_departamento=$idDepto"
+
+        val req = JsonObjectRequest(Request.Method.GET, url, null,
+            { r ->
+                if (r.has("status") && r.getString("status") == "error") {
+                    onError(r.optString("message", "Error BD"))
+                    return@JsonObjectRequest
+                }
+
+                try {
+                    val arr = r.optJSONArray("eventos") ?: org.json.JSONArray()
+                    val lista = ArrayList<Evento>()
+                    for (i in 0 until arr.length()) {
+                        val o = arr.getJSONObject(i)
+                        lista.add(
+                            Evento(
+                                id = o.optInt("id"),
+                                tipo = o.optString("tipo"),
+                                resultado = o.optString("resultado"),
+                                fecha = o.optString("fecha"),
+                                usuarioNombre = o.optString("usuario"),
+                                sensorCodigo = o.optString("sensor")
+                            )
+                        )
+                    }
+                    onSuccess(lista)
+                } catch (e: Exception) { onError("Error parseando JSON: ${e.message}") }
+            },
+            { error ->
+                val response = error.networkResponse
+                if (response != null && response.data != null) {
+                    try {
+                        val errorString = String(response.data, Charsets.UTF_8)
+                        onError("Error ${response.statusCode}: $errorString")
+                        Log.e(TAG, "SERVER ERROR BODY: $errorString")
+                    } catch (e: Exception) {
+                        onError("Error HTTP ${response.statusCode}")
+                    }
+                } else {
+                    onError("Error de conexión (Sin respuesta)")
+                }
             }
         )
         q.add(req)

@@ -64,6 +64,7 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Logo -->
+        <!-- Asegúrate que el archivo sea res/drawable/logosplash.png (minúsculas) -->
         <ImageView
             android:id="@+id/logo_dashboard"
             android:layout_width="140dp"
@@ -128,12 +129,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
+            <!-- Asegúrate que el archivo sea res/drawable/historial.png (minúsculas) -->
             <ImageView
                 android:id="@+id/icon_historial"
                 android:layout_width="72dp"
                 android:layout_height="72dp"
                 android:src="@drawable/historial"
-                tools:src="@android:drawable/ic_menu_recent_history"
+                tools:src="@drawable/historial"
                 android:contentDescription="Icono Historial de Accesos"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -171,12 +173,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
+            <!-- Asegúrate que el archivo sea res/drawable/controlmanual.png (minúsculas) -->
             <ImageView
                 android:id="@+id/icon_control_manual"
                 android:layout_width="72dp"
                 android:layout_height="72dp"
-                android:src="@drawable/control_manual"
-                tools:src="@android:drawable/ic_menu_send"
+                android:src="@drawable/controlmanual"
+                tools:src="@drawable/controlmanual"
                 android:contentDescription="Icono Control Manual"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
