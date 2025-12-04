@@ -12,11 +12,8 @@ object SessionManager {
     private const val KEY_EMAIL = "correo"
     private const val KEY_ROL = "rol"
     private const val KEY_ESTADO = "estado"
-    private const val KEY_DEPARTAMENTO_ID = "departamento_id"
+    private const val KEY_ID_DEPTO = "id_departamento" // <--- NUEVO
 
-    /**
-     * Guardar usuario completo en sesión
-     */
     fun saveUser(
         ctx: Context,
         id: Int,
@@ -25,7 +22,7 @@ object SessionManager {
         email: String,
         rol: String = "operador",
         estado: String = "activo",
-        departamentoId: Int
+        idDepartamento: Int // <--- NUEVO PARAMETRO
     ) {
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
             .putInt(KEY_ID, id)
@@ -34,28 +31,17 @@ object SessionManager {
             .putString(KEY_EMAIL, email)
             .putString(KEY_ROL, rol)
             .putString(KEY_ESTADO, estado)
-            .putInt(KEY_DEPARTAMENTO_ID, departamentoId)
+            .putInt(KEY_ID_DEPTO, idDepartamento) // <--- GUARDAMOS DEPTO
             .apply()
     }
 
-    /**
-     * Obtener ID del usuario
-     * @return ID del usuario o -1 si no hay sesión
-     */
     fun getUserId(ctx: Context): Int =
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getInt(KEY_ID, -1)
 
-    /**
-     * Obtener ID del departamento del usuario
-     * @return ID del departamento o -1 si no se encuentra
-     */
-    fun getDepartamentoId(ctx: Context): Int =
-        ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getInt(KEY_DEPARTAMENTO_ID, -1)
+    // <--- NUEVA FUNCION PARA OBTENER DEPTO
+    fun getDeptId(ctx: Context): Int =
+        ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getInt(KEY_ID_DEPTO, 0)
 
-    /**
-     * Obtener nombre completo del usuario
-     * @return "Nombres Apellidos" o null si no hay sesión
-     */
     fun getFullName(ctx: Context): String? {
         val sp = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val n = sp.getString(KEY_NOMBRES, "") ?: ""
@@ -64,72 +50,34 @@ object SessionManager {
         return if (full.isBlank()) null else full
     }
 
-    /**
-     * Obtener nombres del usuario
-     */
     fun getNombres(ctx: Context): String =
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_NOMBRES, "") ?: ""
 
-    /**
-     * Obtener apellidos del usuario
-     */
     fun getApellidos(ctx: Context): String =
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_APELLIDOS, "") ?: ""
 
-    /**
-     * Obtener email del usuario
-     */
     fun getEmail(ctx: Context): String =
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_EMAIL, "") ?: ""
 
-    /**
-     * Obtener rol del usuario
-     * @return "admin" o "operador"
-     */
     fun getRol(ctx: Context): String =
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_ROL, "operador") ?: "operador"
 
-    /**
-     * Obtener estado del usuario
-     * @return "activo" o "inactivo"
-     */
+    fun getRole(ctx: Context): String = getRol(ctx)
+
     fun getEstado(ctx: Context): String =
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_ESTADO, "activo") ?: "activo"
 
-    /**
-     * Verificar si el usuario es administrador
-     */
-    fun isAdmin(ctx: Context): Boolean =
-        getRol(ctx) == "admin"
+    fun isAdmin(ctx: Context): Boolean = getRol(ctx) == "admin"
+    fun isOperador(ctx: Context): Boolean = getRol(ctx) == "operador"
+    fun isActivo(ctx: Context): Boolean = getEstado(ctx) == "activo"
 
-    /**
-     * Verificar si el usuario es operador
-     */
-    fun isOperador(ctx: Context): Boolean =
-        getRol(ctx) == "operador"
-
-    /**
-     * Verificar si el usuario está activo
-     */
-    fun isActivo(ctx: Context): Boolean =
-        getEstado(ctx) == "activo"
-
-    /**
-     * Verificar si hay una sesión activa
-     */
     fun hasActiveSession(ctx: Context): Boolean =
         getUserId(ctx) != -1 && getFullName(ctx) != null
 
-    /**
-     * Limpiar toda la sesión
-     */
     fun clear(ctx: Context) {
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().clear().apply()
     }
 
-    /**
-     * Cerrar sesión y volver al login
-     */
     fun logoutAndGoToLogin(activity: Activity) {
         clear(activity)
         val i = Intent(activity, MainActivity::class.java).apply {
@@ -137,47 +85,5 @@ object SessionManager {
         }
         activity.startActivity(i)
         activity.finish()
-    }
-
-    /**
-     * Obtener toda la información del usuario como un objeto
-     */
-    fun getUserInfo(ctx: Context): UserInfo? {
-        val id = getUserId(ctx)
-        if (id == -1) return null
-
-        // ===== CÓDIGO CORREGIDO AQUÍ =====
-        return UserInfo(
-            id = id,
-            nombres = getNombres(ctx),
-            apellidos = getApellidos(ctx),
-            email = getEmail(ctx),
-            rol = getRol(ctx),
-            estado = getEstado(ctx),
-            departamentoId = getDepartamentoId(ctx) // Se añade el id del departamento
-        )
-    }
-
-    /**
-     * Data class para información del usuario
-     */
-    // ===== CÓDIGO CORREGIDO AQUÍ =====
-    data class UserInfo(
-        val id: Int,
-        val nombres: String,
-        val apellidos: String,
-        val email: String,
-        val rol: String,
-        val estado: String,
-        val departamentoId: Int // Se añade el id del departamento
-    ) {
-        val nombreCompleto: String
-            get() = "$nombres $apellidos".trim()
-
-        val isAdmin: Boolean
-            get() = rol == "admin"
-
-        val isActivo: Boolean
-            get() = estado == "activo"
     }
 }

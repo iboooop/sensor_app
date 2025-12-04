@@ -79,7 +79,7 @@ class dashboardAdmin : AppCompatActivity() {
 
         // Botón Desarrollador
         btnDeveloper.setOnClickListener {
-            startActivity(Intent(this, desarrollador::class.java))
+            startActivity(Intent(this, EventosOpciones::class.java))
         }
 
         // Botón Salir

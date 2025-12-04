@@ -18,7 +18,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var etPassword: EditText
     private lateinit var btnLogin: MaterialButton
     private lateinit var api: UsuarioApiService
-
     private var lastWarnAt = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,10 +31,10 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // Si ya hay sesión, ir directo al dashboard
-        if (SessionManager.hasActiveSession(this)) {
-            startActivity(Intent(this, dashboardAdmin::class.java))
-            finish()
+        // ✅ Solo continuar si hay sesión activa y usuario activo
+        if (SessionManager.hasActiveSession(this) && SessionManager.isActivo(this)) {
+            val sessionRole = SessionManager.getRol(this)
+            redirigirSegunRol(sessionRole)
             return
         }
 
@@ -45,7 +44,6 @@ class MainActivity : AppCompatActivity() {
         btnLogin = findViewById(R.id.btnLogin)
 
         btnLogin.setOnClickListener { intentarLogin() }
-
         findViewById<TextView>(R.id.tvForgotPassword).setOnClickListener {
             startActivity(Intent(this, RecuperarContraseniaActivity::class.java))
         }
@@ -54,9 +52,7 @@ class MainActivity : AppCompatActivity() {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 intentarLogin()
                 true
-            } else {
-                false
-            }
+            } else false
         }
     }
 
@@ -73,56 +69,37 @@ class MainActivity : AppCompatActivity() {
         api.login(
             correo = correo,
             password = pass,
-            // ===== CORRECCIÓN PRINCIPAL AQUÍ =====
-            // Ahora recibimos 'departamentoId' desde la API
-            onSuccess = { id, nombres, apellidos, email, rol, estado, departamentoId ->
-
-                // Y lo usamos para guardar la sesión completa en SessionManager
-                SessionManager.saveUser(this, id, nombres, apellidos, email, rol, estado, departamentoId)
-                // ===================================
-
-                val mensaje = when (rol) {
-                    "admin" -> "Bienvenido Administrador"
-                    "operador" -> "Bienvenido Operador"
-                    else -> "Bienvenido"
-                }
-
-                val i = Intent(this, dashboardAdmin::class.java).apply {
-                    putExtra("usuario_nombre", "$nombres $apellidos")
-                    putExtra("usuario_rol", rol)
-                    putExtra("usuario_estado", estado)
-                }
-
+            // MODIFICADO PARA RECIBIR EL ID_DEPTO
+            onSuccess = { id, nombres, apellidos, email, rol, estado, idDepto ->
+                // GUARDAMOS EL USUARIO CON SU DEPTO
+                SessionManager.saveUser(this, id, nombres, apellidos, email, rol, estado, idDepto)
                 setLoading(false)
 
                 SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
-                    .setTitleText(mensaje)
+                    .setTitleText("Bienvenido")
                     .setContentText("$nombres $apellidos")
-                    .setConfirmText("Continuar")
+                    .setConfirmText("Ingresar")
                     .setConfirmClickListener {
                         it.dismissWithAnimation()
-                        startActivity(i)
-                        finish()
+                        redirigirSegunRol(rol)
                     }
                     .show()
             },
             onError = { msg ->
                 setLoading(false)
-                val (titulo, contenido) = when {
-                    msg.contains("inactivo", ignoreCase = true) ->
-                        "Usuario Inactivo" to "Tu cuenta está desactivada. Contacta al administrador."
-                    msg.contains("contraseña", ignoreCase = true) || msg.contains("incorrecta", ignoreCase = true) ->
-                        "Contraseña Incorrecta" to "Verifica tu contraseña e intenta nuevamente."
-                    msg.contains("no encontrado", ignoreCase = true) ->
-                        "Usuario no encontrado" to "El correo ingresado no está registrado."
-                    msg.contains("credenciales", ignoreCase = true) ->
-                        "Credenciales Incorrectas" to "Usuario o contraseña incorrectos."
-                    else ->
-                        "Error de inicio de sesión" to msg
-                }
-                showError(titulo, contenido)
+                showError("Error", msg)
             }
         )
+    }
+
+    private fun redirigirSegunRol(rol: String) {
+        val intent: Intent = if (rol.equals("admin", ignoreCase = true)) {
+            Intent(this, dashboardAdmin::class.java)
+        } else {
+            Intent(this, UserDashboardActivity::class.java)
+        }
+        startActivity(intent)
+        finish()
     }
 
     private fun setLoading(b: Boolean) {
@@ -135,18 +112,10 @@ class MainActivity : AppCompatActivity() {
         val now = System.currentTimeMillis()
         if (now - lastWarnAt < 1500) return
         lastWarnAt = now
-        SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
-            .setTitleText(title)
-            .setContentText(content)
-            .setConfirmText("OK")
-            .show()
+        SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE).setTitleText(title).setContentText(content).show()
     }
 
     private fun showError(title: String, content: String) {
-        SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
-            .setTitleText(title)
-            .setContentText(content)
-            .setConfirmText("OK")
-            .show()
+        SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE).setTitleText(title).setContentText(content).show()
     }
 }
