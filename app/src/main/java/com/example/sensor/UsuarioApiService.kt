@@ -213,11 +213,24 @@ class UsuarioApiService(ctx: Context) {
         q.add(req)
     }
 
-    fun listarSensores(onSuccess: (List<Sensor>) -> Unit, onError: (String) -> Unit) {
-        val url = "$baseUrl/listar_sensores.php"
+    /**
+     * Lista los sensores.
+     * Si se provee un 'idDepto', filtra por ese departamento.
+     * Si 'idDepto' es nulo o 0, lista todos los sensores.
+     */
+    fun listarSensores(
+        idDepto: Int? = null,
+        onSuccess: (List<Sensor>) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        var url = "$baseUrl/listar_sensores.php"
+        if (idDepto != null && idDepto > 0) {
+            url += "?id_departamento=$idDepto"
+        }
+
         val req = StringRequest(Request.Method.GET, url,
             { response ->
-                Log.d(TAG, "Respuesta listarSensores: $response")
+                Log.d(TAG, "Respuesta listarSensores (URL: $url): $response")
                 try {
                     val r = JSONObject(response)
                     if (!r.optBoolean("success", true)) {
@@ -242,9 +255,9 @@ class UsuarioApiService(ctx: Context) {
                         )
                     }
                     onSuccess(out)
-                } catch (e: Exception) { onError("Error parseando JSON") }
+                } catch (e: Exception) { onError("Error parseando JSON: ${e.message}") }
             },
-            { error -> onError("Error Red: ${error.message}") }
+            { error -> onError("Error de Red: ${error.message}") }
         )
         q.add(req)
     }
@@ -337,7 +350,6 @@ class UsuarioApiService(ctx: Context) {
 
         val req = JsonObjectRequest(Request.Method.GET, url, null,
             { r ->
-                // Verificar si el servidor mandó error lógico (BD explotó)
                 if (r.has("status") && r.getString("status") == "error") {
                     onError(r.optString("message", "Error desconocido del servidor"))
                     return@JsonObjectRequest
@@ -365,12 +377,10 @@ class UsuarioApiService(ctx: Context) {
                 }
             },
             { error ->
-                // Captura errores HTTP (404, 500) y muestra el cuerpo de la respuesta
                 val response = error.networkResponse
                 if (response != null && response.data != null) {
                     try {
                         val errorString = String(response.data, Charsets.UTF_8)
-                        // Intentamos ver si es un JSON de error o texto plano (HTML de error de PHP)
                         if (errorString.contains("Error SQL")) {
                             onError("Error SQL Sever: $errorString")
                         } else {

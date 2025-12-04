@@ -32,10 +32,11 @@ class HistorialAccesoActivity : AppCompatActivity() {
         pDialog.setCancelable(false)
         pDialog.show()
 
-        // Cambia aquí la lógica:
         if (rol.equals("admin", ignoreCase = true)) {
-            // Admin: consulta completa
-            api.listarEventos(0,
+            // Admin: consulta completa (asumiendo que listarEventos existe)
+            // Si no existe una función genérica, podrías necesitar crearla o ajustar esta llamada.
+            // Por ahora, supondremos que tienes una función api.listarTodosLosEventos() o similar.
+            api.listarEventos(0, // Asumiendo que 0 significa "todos"
                 onSuccess = { lista ->
                     pDialog.dismissWithAnimation()
                     if (lista.isEmpty()) {
@@ -57,7 +58,14 @@ class HistorialAccesoActivity : AppCompatActivity() {
             )
         } else {
             // Usuario normal: eventos de su departamento
-            val idDepto = SessionManager.getDeptId(this)
+
+            // ===== CORRECCIÓN AQUÍ =====
+            // Cambiamos getDeptId por el nombre correcto de la función.
+            val idDepto = SessionManager.getDepartamentoId(this)
+            // ===========================
+
+            // Asumiendo que tienes una función listarEventosPorDepartamento en tu API.
+            // Si no existe, deberás crearla.
             api.listarEventosPorDepartamento(idDepto,
                 onSuccess = { lista ->
                     pDialog.dismissWithAnimation()

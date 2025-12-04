@@ -12,7 +12,7 @@ object SessionManager {
     private const val KEY_EMAIL = "correo"
     private const val KEY_ROL = "rol"
     private const val KEY_ESTADO = "estado"
-    private const val KEY_ID_DEPTO = "id_departamento" // <--- NUEVO
+    private const val KEY_ID_DEPTO = "id_departamento"
 
     fun saveUser(
         ctx: Context,
@@ -22,7 +22,7 @@ object SessionManager {
         email: String,
         rol: String = "operador",
         estado: String = "activo",
-        idDepartamento: Int // <--- NUEVO PARAMETRO
+        idDepartamento: Int
     ) {
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
             .putInt(KEY_ID, id)
@@ -31,16 +31,21 @@ object SessionManager {
             .putString(KEY_EMAIL, email)
             .putString(KEY_ROL, rol)
             .putString(KEY_ESTADO, estado)
-            .putInt(KEY_ID_DEPTO, idDepartamento) // <--- GUARDAMOS DEPTO
+            .putInt(KEY_ID_DEPTO, idDepartamento)
             .apply()
     }
 
     fun getUserId(ctx: Context): Int =
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getInt(KEY_ID, -1)
 
-    // <--- NUEVA FUNCION PARA OBTENER DEPTO
-    fun getDeptId(ctx: Context): Int =
-        ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getInt(KEY_ID_DEPTO, 0)
+    // ===== CORRECCIÓN DE NOMBRE AQUÍ =====
+    /**
+     * Obtiene el ID del departamento del usuario que ha iniciado sesión.
+     * Devuelve -1 si no se encuentra.
+     */
+    fun getDepartamentoId(ctx: Context): Int =
+        ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getInt(KEY_ID_DEPTO, -1)
+    // =====================================
 
     fun getFullName(ctx: Context): String? {
         val sp = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -62,6 +67,7 @@ object SessionManager {
     fun getRol(ctx: Context): String =
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_ROL, "operador") ?: "operador"
 
+    // Esta función es redundante, pero la mantenemos por si la usas en otro lado.
     fun getRole(ctx: Context): String = getRol(ctx)
 
     fun getEstado(ctx: Context): String =
