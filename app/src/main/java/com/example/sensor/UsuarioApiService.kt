@@ -183,10 +183,10 @@ class UsuarioApiService(ctx: Context) {
     }
 
     // =================================================================
-    // SECCIÓN: GESTIÓN DE SENSORES Y FILTRADO
+    // SECCIÓN: GESTIÓN DE SENSORES
     // =================================================================
 
-    // Listar usuarios filtrados por departamento para el Spinner
+    // Listar usuarios filtrados por departamento (para Spinners)
     fun listarUsuariosPorDepto(idDepto: Int, onSuccess: (List<Usuario>) -> Unit, onError: (String) -> Unit) {
         val url = "$baseUrl/listar_usuarios_por_depto.php?id_departamento=$idDepto"
         val req = JsonObjectRequest(Request.Method.GET, url, null,
@@ -201,7 +201,7 @@ class UsuarioApiService(ctx: Context) {
                                 id = o.optInt("id", 0),
                                 nombre = o.optString("nombres", ""),
                                 apellido = o.optString("apellidos", ""),
-                                email = "",
+                                email = "", // Datos no necesarios para spinner
                                 rol = "",
                                 estado = "activo",
                                 departamentoNombre = ""
@@ -216,7 +216,7 @@ class UsuarioApiService(ctx: Context) {
         q.add(req)
     }
 
-    // Listar Sensores (Usa StringRequest para diagnosticar errores 500 si ocurren)
+    // Listar Sensores (StringRequest para mejor manejo de errores)
     fun listarSensores(onSuccess: (List<Sensor>) -> Unit, onError: (String) -> Unit) {
         val url = "$baseUrl/listar_sensores.php"
         val req = StringRequest(Request.Method.GET, url,
@@ -253,9 +253,7 @@ class UsuarioApiService(ctx: Context) {
         q.add(req)
     }
 
-    // =================================================================
-    //  CORRECCIÓN CLAVE: IngresarSensor enviando JSON
-    // =================================================================
+    // Registrar Sensor (ENVÍA JSON)
     fun ingresarSensor(
         codigoSensor: String,
         tipo: String,
@@ -266,21 +264,17 @@ class UsuarioApiService(ctx: Context) {
         onError: (String) -> Unit
     ) {
         val url = "$baseUrl/ingresar_sensor.php"
-
-        // Construimos el JSON Body (Esto arregla el problema del ID Usuario NULL)
         val jsonBody = JSONObject().apply {
             put("codigo_sensor", codigoSensor)
             put("tipo", tipo)
             put("estado", estado)
             put("id_departamento", idDepartamento)
-            put("id_usuario", idUsuario) // Envía el entero (0 o ID real)
+            put("id_usuario", idUsuario)
         }
 
-        // Usamos JsonObjectRequest
         val req = JsonObjectRequest(Request.Method.POST, url, jsonBody,
             { r ->
                 try {
-                    // El PHP devuelve "status": "success"
                     if (r.optString("status") == "success" || r.optBoolean("success", false)) {
                         onSuccess()
                     } else {
@@ -289,9 +283,71 @@ class UsuarioApiService(ctx: Context) {
                 } catch (e: Exception) { onError("Error respuesta servidor") }
             },
             { error ->
-                val codigo = error.networkResponse?.statusCode ?: 0
-                val datos = error.networkResponse?.data?.let { String(it) } ?: ""
-                onError("Error Red ($codigo): $datos")
+                onError("Error Red: ${error.message}")
+            }
+        )
+        q.add(req)
+    }
+
+    // Modificar Sensor Completo (Botón Guardar Cambios)
+    fun modificarSensor(
+        idSensor: Int,
+        codigo: String,
+        tipo: String,
+        estado: String,
+        idDepartamento: Int,
+        idUsuario: Int,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        val url = "$baseUrl/actualizar_sensor.php"
+        val jsonBody = JSONObject().apply {
+            put("id_sensor", idSensor)
+            put("codigo_sensor", codigo)
+            put("tipo", tipo)
+            put("estado", estado)
+            put("id_departamento", idDepartamento)
+            put("id_usuario", idUsuario)
+        }
+
+        val req = JsonObjectRequest(Request.Method.POST, url, jsonBody,
+            { r ->
+                try {
+                    if (r.optString("status") == "success" || r.optBoolean("success", false)) {
+                        onSuccess()
+                    } else {
+                        onError(r.optString("message", "Error al actualizar"))
+                    }
+                } catch (e: Exception) { onError("Error respuesta servidor") }
+            },
+            { error ->
+                onError("Error de conexión: ${error.networkResponse?.statusCode ?: 0}")
+            }
+        )
+        q.add(req)
+    }
+
+    // NUEVA: Cambiar solo estado (Botones rápidos)
+    fun cambiarEstadoSensor(
+        idSensor: Int,
+        nuevoEstado: String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        val url = "$baseUrl/actualizar_estado_sensor.php"
+        val jsonBody = JSONObject().apply {
+            put("id_sensor", idSensor)
+            put("estado", nuevoEstado)
+        }
+
+        val req = JsonObjectRequest(Request.Method.POST, url, jsonBody,
+            { r ->
+                if (r.optString("status") == "success") onSuccess()
+                else onError(r.optString("message", "No se pudo cambiar el estado"))
+            },
+            { error ->
+                val code = error.networkResponse?.statusCode ?: 0
+                onError("Error de conexión: $code")
             }
         )
         q.add(req)

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Permiso de cámara si usas QR en el futuro -->
     <uses-permission
         android:name="android.permission.CAMERA"
         tools:ignore="PermissionImpliesUnsupportedChromeOsHardware" />
@@ -19,11 +20,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
-        <!-- ==========================================
-             INICIO Y NAVEGACIÓN PRINCIPAL
-             ========================================== -->
-
-        <!-- SPLASH (LAUNCHER) - Única actividad exportada -->
+        <!-- SPLASH (LAUNCHER) -->
         <activity
             android:name=".SplashActivity"
             android:exported="true">
@@ -33,71 +30,27 @@
             </intent-filter>
         </activity>
 
-        <!-- LOGIN -->
-        <activity
-            android:name=".MainActivity"
-            android:exported="false" />
+        <!-- GENERALES -->
+        <activity android:name=".MainActivity" android:exported="false" />
+        <activity android:name=".dashboardAdmin" android:exported="false" />
+        <activity android:name=".desarrollador" android:exported="false" />
 
-        <!-- DASHBOARD PRINCIPAL -->
-        <activity
-            android:name=".dashboardAdmin"
-            android:exported="false" />
+        <!-- USUARIOS -->
+        <activity android:name=".opciones_crudusuario" android:exported="false" />
+        <activity android:name=".IngresarUsuario" android:exported="false" />
+        <activity android:name=".ListarUsuario" android:exported="false" />
+        <activity android:name=".ModificarUsuario" android:exported="false" />
 
-        <!-- CRÉDITOS / INFO -->
-        <activity
-            android:name=".desarrollador"
-            android:exported="false" />
+        <!-- SENSORES -->
+        <activity android:name=".OpcionesCrudSensor" android:exported="false" />
+        <activity android:name=".IngresarSensor" android:exported="false" />
+        <activity android:name=".ListarSensor" android:exported="false" />
+        <!-- Aquí está la nueva actividad -->
+        <activity android:name=".ModificarSensor" android:exported="false" />
 
-
-        <!-- ==========================================
-             MÓDULO DE USUARIOS
-             ========================================== -->
-
-        <activity
-            android:name=".opciones_crudusuario"
-            android:exported="false" />
-
-        <activity
-            android:name=".IngresarUsuario"
-            android:exported="false" />
-
-        <activity
-            android:name=".ListarUsuario"
-            android:exported="false" />
-
-        <activity
-            android:name=".ModificarUsuario"
-            android:exported="false" />
-
-
-        <!-- ==========================================
-             MÓDULO DE SENSORES
-             ========================================== -->
-
-        <activity
-            android:name=".OpcionesCrudSensor"
-            android:exported="false" />
-
-        <activity
-            android:name=".IngresarSensor"
-            android:exported="false" />
-
-        <activity
-            android:name=".ListarSensor"
-            android:exported="false" />
-
-
-        <!-- ==========================================
-             RECUPERACIÓN DE CONTRASEÑA
-             ========================================== -->
-
-        <activity
-            android:name=".RecuperarContraseniaActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".CrearContraseniaActivity"
-            android:exported="false" />
+        <!-- RECUPERACIÓN CONTRASEÑA -->
+        <activity android:name=".RecuperarContraseniaActivity" android:exported="false" />
+        <activity android:name=".CrearContraseniaActivity" android:exported="false" />
 
     </application>
 

@@ -30,8 +30,8 @@ class ListarSensor : AppCompatActivity() {
         etSearch = findViewById(R.id.search_sensores)
 
         rvSensores.layoutManager = LinearLayoutManager(this)
-        // Aquí definimos qué pasa al hacer clic. Por ahora solo muestra un aviso.
-        // Cuando tengas "ModificarSensor", cambias esto por el Intent.
+
+        // Clic en el item -> abrirModificar
         adapter = SensorRvAdapter { s -> abrirModificar(s) }
         rvSensores.adapter = adapter
 
@@ -74,16 +74,14 @@ class ListarSensor : AppCompatActivity() {
     }
 
     private fun abrirModificar(s: Sensor) {
-        // A FUTURO: Descomenta y crea ModificarSensor
-        /*
         val i = Intent(this, ModificarSensor::class.java).apply {
             putExtra("sensor_id", s.id)
+            putExtra("sensor_codigo", s.codigo)
+            putExtra("sensor_tipo", s.tipo)
+            putExtra("sensor_estado", s.estado)
+            putExtra("sensor_depto", s.departamentoNombre)
+            putExtra("sensor_usuario", s.usuarioNombre)
         }
         startActivity(i)
-        */
-        SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE)
-            .setTitleText("Sensor Seleccionado")
-            .setContentText("Código: ${s.codigo}\nEstado: ${s.estado}")
-            .show()
     }
 }
