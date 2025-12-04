@@ -6,58 +6,60 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import java.util.Locale
 
 class SensorRvAdapter(
     private val onClick: (Sensor) -> Unit
-) : RecyclerView.Adapter<SensorRvAdapter.Vh>() {
+) : RecyclerView.Adapter<SensorRvAdapter.SensorViewHolder>() {
 
-    private var lista = listOf<Sensor>()
+    private var items = listOf<Sensor>()
 
     fun setItems(newItems: List<Sensor>) {
-        lista = newItems
+        items = newItems
         notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Vh {
-        val v = LayoutInflater.from(parent.context).inflate(R.layout.item_sensor, parent, false)
-        return Vh(v)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SensorViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_sensor, parent, false)
+        return SensorViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: Vh, position: Int) {
-        holder.bind(lista[position])
+    override fun onBindViewHolder(holder: SensorViewHolder, position: Int) {
+        holder.bind(items[position], onClick)
     }
 
-    override fun getItemCount() = lista.size
+    override fun getItemCount() = items.size
 
-    inner class Vh(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class SensorViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvCodigo: TextView = itemView.findViewById(R.id.tv_codigo_sensor)
         private val tvTipo: TextView = itemView.findViewById(R.id.tv_tipo)
         private val tvEstado: TextView = itemView.findViewById(R.id.tv_estado)
         private val tvDepto: TextView = itemView.findViewById(R.id.tv_departamento)
+        private val tvUsuario: TextView = itemView.findViewById(R.id.tv_usuario_asignado) // <--- NUEVO
         private val tvFecha: TextView = itemView.findViewById(R.id.tv_fecha)
 
-        fun bind(s: Sensor) {
-            tvCodigo.text = s.codigo
-            tvTipo.text = s.tipo.uppercase(Locale.getDefault())
-            tvFecha.text = "Alta: ${s.fechaAlta}"
-            tvDepto.text = s.departamentoNombre
+        fun bind(sensor: Sensor, onClick: (Sensor) -> Unit) {
+            tvCodigo.text = sensor.codigo
+            tvTipo.text = sensor.tipo.uppercase()
+            tvDepto.text = sensor.departamentoNombre
+            tvFecha.text = "Alta: ${sensor.fechaAlta}"
 
-            // Config Estado y Color
-            val estadoUpper = s.estado.uppercase(Locale.getDefault())
-            tvEstado.text = estadoUpper
-
-            val color = when (s.estado.lowercase()) {
-                "activo" -> "#4CAF50"   // Verde
-                "inactivo" -> "#FF9800" // Naranja
-                "perdido" -> "#F44336"  // Rojo
-                "bloqueado" -> "#9E9E9E"// Gris
-                else -> "#000000"
+            // Mostrar usuario
+            tvUsuario.text = if (sensor.usuarioNombre == "Sin asignar" || sensor.usuarioNombre.isEmpty()) {
+                "Sin Usuario Asignado"
+            } else {
+                "Usuario: ${sensor.usuarioNombre}"
             }
-            tvEstado.setTextColor(Color.parseColor(color))
 
-            // Clic para ir a modificar (cuando crees esa pantalla)
-            itemView.setOnClickListener { onClick(s) }
+            // Lógica de colores para estado
+            tvEstado.text = sensor.estado.uppercase()
+            when (sensor.estado.lowercase()) {
+                "activo" -> tvEstado.setTextColor(Color.parseColor("#4CAF50")) // Verde
+                "inactivo" -> tvEstado.setTextColor(Color.parseColor("#F44336")) // Rojo
+                "perdido" -> tvEstado.setTextColor(Color.parseColor("#FF9800")) // Naranja
+                else -> tvEstado.setTextColor(Color.GRAY)
+            }
+
+            itemView.setOnClickListener { onClick(sensor) }
         }
     }
 }

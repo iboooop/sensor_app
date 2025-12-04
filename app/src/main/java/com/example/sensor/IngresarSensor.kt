@@ -6,10 +6,6 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import cn.pedant.SweetAlert.SweetAlertDialog
 
-// Asumimos que tienes estas Data Class o similares
-// data class Usuario(val id_usuario: Int, val nombre: String, val apellido: String)
-// data class Departamento(val id: Int, val nombre: String)
-
 class IngresarSensor : AppCompatActivity() {
 
     private lateinit var etCodigo: EditText
@@ -19,31 +15,25 @@ class IngresarSensor : AppCompatActivity() {
     private lateinit var btnRegistrar: Button
     private lateinit var api: UsuarioApiService
 
-    // Listas para los spinners
     private var departamentos: List<Departamento> = emptyList()
     private var usuarios: List<Usuario> = emptyList()
 
-    // IDs seleccionados
     private var departamentoSeleccionadoId: Int = 0
-    private var usuarioSeleccionadoId: Int = 0 // 0 significa sin asignar o NULL
+    private var usuarioSeleccionadoId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_ingresar_sensor) // Asegúrate que el nombre del layout coincida
+        setContentView(R.layout.activity_ingresar_sensor)
 
         api = UsuarioApiService(this)
 
-        // Vincular vistas
         etCodigo = findViewById(R.id.txt_codigo_sensor)
         spinnerDepartamento = findViewById(R.id.spinner_departamento_sensor)
         spinnerUsuario = findViewById(R.id.spinner_usuario_sensor)
         rgTipo = findViewById(R.id.rg_tipo_sensor)
         btnRegistrar = findViewById(R.id.btn_registro_sensor)
 
-        // Cargar datos iniciales
         cargarDepartamentos()
-        cargarUsuarios() // Necesario para el nuevo Spinner
-
         btnRegistrar.setOnClickListener { registrarSensor() }
     }
 
@@ -60,27 +50,39 @@ class IngresarSensor : AppCompatActivity() {
 
                 spinnerDepartamento.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                        departamentoSeleccionadoId = if (position == 0) 0 else departamentos[position - 1].id
+                        if (position == 0) {
+                            departamentoSeleccionadoId = 0
+                            limpiarUsuarios()
+                        } else {
+                            departamentoSeleccionadoId = departamentos[position - 1].id
+                            cargarUsuariosDelDepto(departamentoSeleccionadoId)
+                        }
                     }
                     override fun onNothingSelected(parent: AdapterView<*>?) {}
                 }
             },
-            onError = {
-                // Opcional: Mostrar error o dejar vacío si falla
-                warn("Error", "No se cargaron departamentos")
-            }
+            onError = { warn("Error", "No se cargaron departamentos") }
         )
     }
 
-    private fun cargarUsuarios() {
-        // ASUMIENDO que agregaste listarUsuarios en tu API Service
-        api.listarUsuarios(
+    private fun cargarUsuariosDelDepto(idDepto: Int) {
+        val loadingAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, listOf("Cargando usuarios..."))
+        spinnerUsuario.adapter = loadingAdapter
+        spinnerUsuario.isEnabled = false
+
+        // AHORA SÍ FUNCIONARÁ PORQUE LA AGREGAMOS EN EL APISERVICE
+        api.listarUsuariosPorDepto(idDepto,
             onSuccess = { lista ->
                 usuarios = lista
-                // Opción por defecto para no asignar usuario
+                spinnerUsuario.isEnabled = true
+
                 val nombres = mutableListOf("Sin asignar (Disponible)")
-                // Formato "Juan Perez" en el spinner
-                nombres.addAll(lista.map { "${it.nombre} ${it.apellido}" })
+                if (lista.isEmpty()) {
+                    nombres.add("(No hay usuarios en este depto)")
+                } else {
+                    // Mapeamos usando las propiedades correctas de Data Class Usuario
+                    nombres.addAll(lista.map { "${it.nombre} ${it.apellido}" })
+                }
 
                 val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, nombres)
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -88,73 +90,58 @@ class IngresarSensor : AppCompatActivity() {
 
                 spinnerUsuario.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                        usuarioSeleccionadoId = if (position == 0) {
-                            0 // Sin asignar
+                        if (position == 0 || lista.isEmpty()) {
+                            usuarioSeleccionadoId = 0
                         } else {
-                            usuarios[position - 1].id // Asegúrate que tu modelo tenga este campo
+                            // El índice 1 del spinner es el usuario 0 de la lista
+                            if (position - 1 < usuarios.size) {
+                                usuarioSeleccionadoId = usuarios[position - 1].id
+                            }
                         }
                     }
                     override fun onNothingSelected(parent: AdapterView<*>?) {}
                 }
             },
             onError = {
-                warn("Atención", "No se pudo cargar la lista de usuarios")
+                spinnerUsuario.isEnabled = true
+                warn("Atención", "No se pudieron cargar los usuarios")
             }
         )
+    }
+
+    private fun limpiarUsuarios() {
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, listOf("Seleccione primero un depto"))
+        spinnerUsuario.adapter = adapter
+        spinnerUsuario.isEnabled = false
+        usuarioSeleccionadoId = 0
     }
 
     private fun registrarSensor() {
         val codigo = etCodigo.text.toString().trim()
+        if (codigo.isEmpty()) { warn("Faltan datos", "Ingrese código"); return }
+        if (departamentoSeleccionadoId == 0) { warn("Ubicación", "Seleccione departamento"); return }
 
-        // Validar Código
-        if (codigo.isEmpty()) {
-            warn("Faltan datos", "Debe ingresar un código para el sensor")
-            return
-        }
-
-        // Validar Departamento
-        if (departamentoSeleccionadoId == 0) {
-            warn("Ubicación", "Debe seleccionar un departamento")
-            return
-        }
-
-        // Nota: usuarioSeleccionadoId puede ser 0, eso es válido (sensor libre)
-
-        // Obtener Tipo
         val selectedTipoId = rgTipo.checkedRadioButtonId
         val tipo = if (selectedTipoId == R.id.rb_llavero) "llavero" else "tarjeta"
 
-        // Llamada a API
         api.ingresarSensor(
             codigoSensor = codigo,
             tipo = tipo,
-            estado = "activo", // Por defecto al crear
+            estado = "activo",
             idDepartamento = departamentoSeleccionadoId,
-            idUsuario = usuarioSeleccionadoId, // Envíamos el ID (0 o valor)
+            idUsuario = usuarioSeleccionadoId,
             onSuccess = {
                 SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
-                    .setTitleText("¡Registrado!")
-                    .setContentText("Sensor agregado correctamente")
-                    .setConfirmText("OK")
-                    .setConfirmClickListener { dlg ->
-                        dlg.dismissWithAnimation()
-                        finish() // Cerrar actividad
-                    }.show()
-            },
-            onError = { msg ->
-                SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
-                    .setTitleText("Error")
-                    .setContentText(msg)
+                    .setTitleText("¡Éxito!")
+                    .setContentText("Sensor guardado")
+                    .setConfirmClickListener { it.dismissWithAnimation(); finish() }
                     .show()
-            }
+            },
+            onError = { msg -> warn("Error", msg) }
         )
     }
 
-    private fun warn(title: String, content: String) {
-        SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
-            .setTitleText(title)
-            .setContentText(content)
-            .setConfirmText("OK")
-            .show()
+    private fun warn(t: String, c: String) {
+        SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE).setTitleText(t).setContentText(c).show()
     }
 }
