@@ -21,7 +21,6 @@ class UserDashboardActivity : AppCompatActivity() {
     private lateinit var tvDepartamentoInfo: TextView
     private lateinit var tvDateTime: TextView
     private lateinit var btnHistorialAccesos: MaterialButton
-    private lateinit var btnControlManual: MaterialButton
     private lateinit var btnLogout: MaterialButton
 
     private val mHandler = Handler(Looper.getMainLooper())
@@ -49,15 +48,12 @@ class UserDashboardActivity : AppCompatActivity() {
         tvDepartamentoInfo = findViewById(R.id.tv_departamento_info)
         tvDateTime = findViewById(R.id.tv_datetime)
         btnHistorialAccesos = findViewById(R.id.btn_historial_accesos)
-        btnControlManual = findViewById(R.id.btn_control_manual)
         btnLogout = findViewById(R.id.btn_logout)
     }
 
     private fun cargarDatosUsuario() {
         val nombreSesion = SessionManager.getFullName(this) ?: "Usuario"
         tvNombreUsuario.text = nombreSesion
-
-        // Cambia esto si tu SessionManager guarda el departamento
         tvDepartamentoInfo.text = "Departamento: 101-A"
     }
 
@@ -65,10 +61,7 @@ class UserDashboardActivity : AppCompatActivity() {
         btnHistorialAccesos.setOnClickListener {
             startActivity(Intent(this, HistorialAccesoActivity::class.java))
         }
-        btnControlManual.setOnClickListener {
-            // Crea ControlManualActivity si no existe, o comenta si no lo necesitas aún
-            // startActivity(Intent(this, ControlManualActivity::class.java))
-        }
+        // Botón de control manual eliminado (no hay nada aquí ahora)
         btnLogout.setOnClickListener { confirmarLogout() }
     }
 

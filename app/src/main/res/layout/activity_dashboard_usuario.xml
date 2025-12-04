@@ -64,7 +64,6 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Logo -->
-        <!-- Asegúrate que el archivo sea res/drawable/logosplash.png (minúsculas) -->
         <ImageView
             android:id="@+id/logo_dashboard"
             android:layout_width="140dp"
@@ -129,7 +128,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <!-- Asegúrate que el archivo sea res/drawable/historial.png (minúsculas) -->
             <ImageView
                 android:id="@+id/icon_historial"
                 android:layout_width="72dp"
@@ -161,51 +159,6 @@
                 app:strokeWidth="3dp"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- Opción 2: Control Manual -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/row_control_manual"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            app:layout_constraintTop_toBottomOf="@id/row_historial"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <!-- Asegúrate que el archivo sea res/drawable/controlmanual.png (minúsculas) -->
-            <ImageView
-                android:id="@+id/icon_control_manual"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:src="@drawable/controlmanual"
-                tools:src="@drawable/controlmanual"
-                android:contentDescription="Icono Control Manual"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_control_manual"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_marginStart="16dp"
-                android:text="Control Manual"
-                android:textAllCaps="true"
-                android:textColor="@color/text_primary"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:backgroundTint="#D1C4E9"
-                app:cornerRadius="36dp"
-                app:layout_constraintStart_toEndOf="@id/icon_control_manual"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:strokeColor="#FFEDD5"
-                app:strokeWidth="3dp"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-
         <!-- Botón de Cerrar Sesión -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_logout"
@@ -220,7 +173,7 @@
             android:textAllCaps="false"
             android:textColor="@android:color/white"
             app:cornerRadius="24dp"
-            app:layout_constraintTop_toBottomOf="@id/row_control_manual"
+            app:layout_constraintTop_toBottomOf="@id/row_historial"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
