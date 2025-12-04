@@ -10,5 +10,7 @@
 
     <color name="button_bg_cream">#FFF5D1</color>      <!-- Crema de la nube -->
     <color name="button_text_dark_brown">#5D4037</color>   <!-- Texto oscuro para fondo crema -->
+    <color name="colorSuccess">#4CAF50</color> <!-- Un verde estándar -->
+    <color name="colorError">#D32F2F</color>   <!-- Un rojo estándar -->
     <!-- ======================================= -->
 </resources>

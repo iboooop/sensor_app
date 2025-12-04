@@ -19,6 +19,7 @@
         android:paddingBottom="32dp"
         tools:context=".dashboardAdmin">
 
+        <!-- ===== SECCIÓN SUPERIOR (SIN CAMBIOS) ===== -->
         <TextView
             android:id="@+id/tv_bienvenida"
             android:layout_width="0dp"
@@ -96,6 +97,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- ===== BOTÓN 1: GESTIÓN DE USUARIO ===== -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/row1"
             android:layout_width="0dp"
@@ -122,7 +124,6 @@
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
                 android:backgroundTint="#E9B3BC"
                 android:text="GESTIÓN DE USUARIO"
                 android:textAllCaps="true"
@@ -138,6 +139,7 @@
                 app:strokeWidth="3dp" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- ===== BOTÓN 2: GESTIÓN DE SENSOR ===== -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/row2"
             android:layout_width="0dp"
@@ -164,7 +166,6 @@
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
                 android:text="GESTIÓN DE SENSOR"
                 android:textAllCaps="true"
                 android:textColor="@color/text_primary"
@@ -180,14 +181,99 @@
                 app:strokeWidth="3dp"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- ===== BOTÓN 3: HISTORIAL DE ACCESOS (NUEVO) ===== -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/row3"
+            android:id="@+id/row_historial"
             android:layout_width="0dp"
             android:layout_height="80dp"
             android:layout_marginTop="24dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             app:layout_constraintTop_toBottomOf="@id/row2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageView
+                android:id="@+id/icon_historial"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:src="@drawable/historial"
+                android:contentDescription="Icono Historial"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_historial"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="24dp"
+                android:backgroundTint="#D1C4E9"
+                android:text="HISTORIAL DE ACCESOS"
+                android:textAllCaps="true"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:cornerRadius="36dp"
+                app:layout_constraintStart_toEndOf="@id/icon_historial"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/icon_historial"
+                app:layout_constraintBottom_toBottomOf="@id/icon_historial"
+                app:strokeColor="#FFEDD5"
+                app:strokeWidth="3dp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- ===== BOTÓN 4: CONTROL MANUAL (NUEVO) ===== -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/row_control_manual"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            app:layout_constraintTop_toBottomOf="@id/row_historial"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageView
+                android:id="@+id/icon_control_manual"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:src="@drawable/controlmanual"
+                android:contentDescription="Icono Control Manual"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_control_manual"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="24dp"
+                android:backgroundTint="#C8E6C9"
+                android:text="CONTROL MANUAL"
+                android:textAllCaps="true"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:cornerRadius="36dp"
+                app:layout_constraintStart_toEndOf="@id/icon_control_manual"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/icon_control_manual"
+                app:layout_constraintBottom_toBottomOf="@id/icon_control_manual"
+                app:strokeColor="#FFEDD5"
+                app:strokeWidth="3dp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- ===== BOTÓN 5: DESARROLLADOR (REORDENADO) ===== -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/row_developer"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            app:layout_constraintTop_toBottomOf="@id/row_control_manual"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
@@ -206,7 +292,6 @@
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
                 android:text="DESARROLLADOR"
                 android:textAllCaps="true"
                 android:textColor="@color/text_primary"
@@ -222,19 +307,21 @@
                 app:strokeWidth="3dp"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- ===== BOTÓN FINAL: CERRAR SESIÓN (REORDENADO) ===== -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_logout"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_marginStart="40dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="32dp"
             android:layout_marginEnd="40dp"
+            android:layout_marginBottom="16dp"
             android:text="Cerrar sesión"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
             android:backgroundTint="#F0B0C7"
             app:cornerRadius="24dp"
-            app:layout_constraintTop_toBottomOf="@id/row3"
+            app:layout_constraintTop_toBottomOf="@id/row_developer"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />

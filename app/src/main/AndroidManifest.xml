@@ -19,15 +19,19 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
-        <!-- ACTIVIDADES NUEVAS (Corregidas) -->
+        <!-- ACTIVIDADES -->
+        <activity
+            android:name=".ControlManualActivity"
+            android:exported="false" />
         <activity
             android:name=".HistorialAccesoActivity"
             android:exported="false" />
         <activity
             android:name=".UserDashboardActivity"
             android:exported="false" />
-
-        <!-- SPLASH (LAUNCHER) -->
+        <activity
+            android:name=".desarrollador"
+            android:exported="false" />
         <activity
             android:name=".SplashActivity"
             android:exported="true">
@@ -36,8 +40,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!-- GENERALES -->
         <activity
             android:name=".MainActivity"
             android:exported="false" />
@@ -47,8 +49,6 @@
         <activity
             android:name=".EventosOpciones"
             android:exported="false" />
-
-        <!-- USUARIOS -->
         <activity
             android:name=".opciones_crudusuario"
             android:exported="false" />
@@ -61,8 +61,6 @@
         <activity
             android:name=".ModificarUsuario"
             android:exported="false" />
-
-        <!-- SENSORES -->
         <activity
             android:name=".OpcionesCrudSensor"
             android:exported="false" />
@@ -75,14 +73,12 @@
         <activity
             android:name=".ModificarSensor"
             android:exported="false" />
-
-        <!-- RECUPERACIÓN CONTRASEÑA -->
         <activity
             android:name=".RecuperarContraseniaActivity"
             android:exported="false" />
         <activity
             android:name=".CrearContraseniaActivity"
             android:exported="false" />
-
     </application>
+
 </manifest>

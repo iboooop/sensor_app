@@ -22,6 +22,8 @@ class dashboardAdmin : AppCompatActivity() {
     private lateinit var tvDateTime: TextView
     private lateinit var btnCrudUser: MaterialButton
     private lateinit var btnSensor: MaterialButton
+    private lateinit var btnHistorial: MaterialButton // <-- NUEVO
+    private lateinit var btnControlManual: MaterialButton // <-- NUEVO
     private lateinit var btnDeveloper: MaterialButton
     private lateinit var btnLogout: MaterialButton
 
@@ -31,7 +33,7 @@ class dashboardAdmin : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_dashboardadmin) // Asegúrate que este sea el nombre correcto de tu XML (dashboard.xml o activity_dashboard.xml)
+        setContentView(R.layout.activity_dashboardadmin)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main_dashboard)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -51,38 +53,46 @@ class dashboardAdmin : AppCompatActivity() {
         tvDateTime = findViewById(R.id.tv_datetime)
         btnCrudUser = findViewById(R.id.btn_crud_user)
         btnSensor = findViewById(R.id.btn_sensor)
+        btnHistorial = findViewById(R.id.btn_historial) // <-- NUEVO
+        btnControlManual = findViewById(R.id.btn_control_manual) // <-- NUEVO
         btnDeveloper = findViewById(R.id.btn_developer)
         btnLogout = findViewById(R.id.btn_logout)
     }
 
     private fun cargarDatosUsuario() {
-        val nombreDirecto = intent.getStringExtra("usuario_nombre")?.takeIf { it.isNotBlank() }
-        val nombresExtra = intent.getStringExtra("nombres")?.trim().orEmpty()
-        val apellidosExtra = intent.getStringExtra("apellidos")?.trim().orEmpty()
-        val nombreCombinadoExtras = "$nombresExtra $apellidosExtra".trim().takeIf { it.isNotBlank() }
-        val nombreSesion = SessionManager.getFullName(this)?.takeIf { it.isNotBlank() }
-        val nombreParaMostrar = nombreDirecto ?: nombreCombinadoExtras ?: nombreSesion ?: "Usuario"
-        tvNombreUsuario.text = nombreParaMostrar
+        val nombreSesion = SessionManager.getFullName(this) ?: "Usuario"
+        tvNombreUsuario.text = nombreSesion
     }
 
     private fun setupClickListeners() {
-        // Botón Gestión de Usuarios
+        // 1. Botón Gestión de Usuarios
         btnCrudUser.setOnClickListener {
-            // Asegúrate de usar el nombre correcto de la clase (revisamos que sea con mayúscula si la cambiaste)
             startActivity(Intent(this, opciones_crudusuario::class.java))
         }
 
-        // Botón Gestión de Sensores -> Ahora va a OpcionesCrudSensor
+        // 2. Botón Gestión de Sensores
         btnSensor.setOnClickListener {
             startActivity(Intent(this, OpcionesCrudSensor::class.java))
         }
 
-        // Botón Desarrollador
+        // 3. Botón Historial de Accesos (NUEVO)
+        btnHistorial.setOnClickListener {
+            startActivity(Intent(this, HistorialAccesoActivity::class.java))
+        }
+
+        // 4. Botón Control Manual (NUEVO)
+        btnControlManual.setOnClickListener {
+            // DEBES CREAR ESTA ACTIVIDAD: ControlManualActivity.kt y su layout
+            // Y añadirla al AndroidManifest.xml
+            startActivity(Intent(this, ControlManualActivity::class.java))
+        }
+
+        // 5. Botón Desarrollador
         btnDeveloper.setOnClickListener {
             startActivity(Intent(this, desarrollador::class.java))
         }
 
-        // Botón Salir
+        // 6. Botón Salir
         btnLogout.setOnClickListener { confirmarLogout() }
     }
 

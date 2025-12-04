@@ -18,6 +18,48 @@ class UsuarioApiService(ctx: Context) {
     private val baseUrl = "http://100.25.170.26"
     private val TAG = "UsuarioApi"
 
+    // ... (dentro de la clase UsuarioApiService)
+
+    fun consultarEstadoBarrera(onSuccess: (String) -> Unit, onError: (String) -> Unit) {
+        val url = "$baseUrl/consultar_estado_barrera.php"
+        val req = JsonObjectRequest(Request.Method.GET, url, null,
+            { response ->
+                try {
+                    val estado = response.optString("estado", "CERRADA")
+                    onSuccess(estado)
+                } catch (e: Exception) {
+                    onError("Error al parsear el estado de la barrera.")
+                }
+            },
+            { error ->
+                onError("Error de red: ${error.message}")
+            }
+        )
+        q.add(req)
+    }
+
+    fun enviarComandoBarrera(comando: String, idUsuario: Int, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        val url = "$baseUrl/controlar_barrera.php"
+        val body = JSONObject().apply {
+            put("comando", comando)
+            put("id_usuario", idUsuario)
+        }
+
+        val req = JsonObjectRequest(Request.Method.POST, url, body,
+            { response ->
+                if (response.optBoolean("success", false)) {
+                    onSuccess()
+                } else {
+                    onError(response.optString("message", "Error al enviar comando."))
+                }
+            },
+            { error ->
+                onError("Error de red: ${error.message}")
+            }
+        )
+        q.add(req)
+    }
+
     // =================================================================
     // SECCIÓN: AUTENTICACIÓN
     // =================================================================

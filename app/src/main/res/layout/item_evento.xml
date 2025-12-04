@@ -6,9 +6,9 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="12dp"
     android:layout_marginVertical="6dp"
+    app:cardBackgroundColor="#FFFFFF"
     app:cardCornerRadius="12dp"
-    app:cardElevation="4dp"
-    app:cardBackgroundColor="#FFFFFF">
+    app:cardElevation="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,71 +20,114 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/icon_resultado"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="8dp"
+                tools:srcCompat="@drawable/ic_success" />
 
             <TextView
                 android:id="@+id/tv_tipo_evento"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                tools:text="ACCESO ACEPTADO"
-                android:textStyle="bold"
                 android:textAllCaps="true"
+                android:textColor="#2E7D32"
                 android:textSize="14sp"
-                android:textColor="#2E7D32" />
+                android:textStyle="bold"
+                tools:text="ACCESO ACEPTADO" />
 
             <TextView
                 android:id="@+id/tv_fecha"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="12/12 14:30"
+                android:textColor="#888"
                 android:textSize="12sp"
-                android:textColor="#888" />
+                tools:text="12/12 14:30" />
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#F0F0F0"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="8dp"
+            android:background="#F0F0F0" />
 
         <!-- Usuario -->
         <TextView
             android:id="@+id/tv_usuario"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="Juan Pérez"
+            android:textColor="@color/text_primary"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="@color/text_primary" />
+            tools:text="Juan Pérez" />
 
         <!-- Detalles: Sensor y Resultado -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="4dp">
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/tv_sensor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Sensor: Entrada Principal"
-                android:textSize="13sp"
+                android:layout_marginEnd="12dp"
                 android:textColor="#666"
-                android:layout_marginEnd="12dp"/>
+                android:textSize="13sp"
+                tools:text="Sensor: Entrada Principal" />
 
             <TextView
                 android:id="@+id/tv_resultado"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Exitoso"
+                android:textColor="#555"
                 android:textSize="13sp"
                 android:textStyle="italic"
-                android:textColor="#555" />
+                tools:text="Exitoso" />
         </LinearLayout>
+
+
+        <!-- ===== NUEVA SECCIÓN DE BOTONES PARA ADMIN (Oculta por defecto) ===== -->
+        <LinearLayout
+            android:id="@+id/layout_acciones_admin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_rechazar"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:text="Rechazar"
+                android:textColor="#D32F2F"
+                app:strokeColor="#D32F2F" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_aceptar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="#4CAF50"
+                android:text="Aceptar Acceso"
+                app:icon="@drawable/ic_lock_open"
+                app:iconGravity="textStart"/>
+
+        </LinearLayout>
+        <!-- ==================================================================== -->
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>
