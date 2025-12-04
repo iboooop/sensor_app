@@ -1,24 +1,27 @@
 package com.example.sensor
 
 import android.os.Bundle
-import android.view.View
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.EditText
+import android.widget.RadioGroup
+import android.widget.Spinner
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import cn.pedant.SweetAlert.SweetAlertDialog
+import android.widget.AdapterView // Asegúrate de que este import esté presente
 
 class IngresarSensor : AppCompatActivity() {
 
     private lateinit var etCodigo: EditText
-    private lateinit var spinnerDepartamento: Spinner
+    private lateinit var tvDepartamentoFijo: TextView
     private lateinit var spinnerUsuario: Spinner
     private lateinit var rgTipo: RadioGroup
     private lateinit var btnRegistrar: Button
     private lateinit var api: UsuarioApiService
 
-    private var departamentos: List<Departamento> = emptyList()
     private var usuarios: List<Usuario> = emptyList()
-
-    private var departamentoSeleccionadoId: Int = 0
+    private var idDeptoUsuario: Int = -1
     private var usuarioSeleccionadoId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,43 +29,34 @@ class IngresarSensor : AppCompatActivity() {
         setContentView(R.layout.activity_ingresar_sensor)
 
         api = UsuarioApiService(this)
+        idDeptoUsuario = SessionManager.getDepartamentoId(this)
 
         etCodigo = findViewById(R.id.txt_codigo_sensor)
-        spinnerDepartamento = findViewById(R.id.spinner_departamento_sensor)
+        tvDepartamentoFijo = findViewById(R.id.tv_departamento_fijo)
         spinnerUsuario = findViewById(R.id.spinner_usuario_sensor)
         rgTipo = findViewById(R.id.rg_tipo_sensor)
         btnRegistrar = findViewById(R.id.btn_registro_sensor)
 
-        cargarDepartamentos()
+        configurarDepartamentoYUsuarios()
         btnRegistrar.setOnClickListener { registrarSensor() }
     }
 
-    private fun cargarDepartamentos() {
+    private fun configurarDepartamentoYUsuarios() {
+        if (idDeptoUsuario == -1) {
+            warn("Error de Sesión", "No se pudo obtener tu departamento. Inicia sesión de nuevo.")
+            tvDepartamentoFijo.text = "Error: Sin departamento"
+            return
+        }
+
         api.listarDepartamentos(
-            onSuccess = { lista ->
-                departamentos = lista
-                val nombres = mutableListOf("Seleccione ubicación...")
-                nombres.addAll(lista.map { it.nombre })
-
-                val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, nombres)
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spinnerDepartamento.adapter = adapter
-
-                spinnerDepartamento.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                        if (position == 0) {
-                            departamentoSeleccionadoId = 0
-                            limpiarUsuarios()
-                        } else {
-                            departamentoSeleccionadoId = departamentos[position - 1].id
-                            cargarUsuariosDelDepto(departamentoSeleccionadoId)
-                        }
-                    }
-                    override fun onNothingSelected(parent: AdapterView<*>?) {}
-                }
+            onSuccess = { listaDepartamentos ->
+                val deptoActual = listaDepartamentos.find { it.id == idDeptoUsuario }
+                tvDepartamentoFijo.text = deptoActual?.nombre ?: "Departamento no encontrado"
             },
-            onError = { warn("Error", "No se cargaron departamentos") }
+            onError = { tvDepartamentoFijo.text = "Error al cargar depto." }
         )
+
+        cargarUsuariosDelDepto(idDeptoUsuario)
     }
 
     private fun cargarUsuariosDelDepto(idDepto: Int) {
@@ -70,7 +64,6 @@ class IngresarSensor : AppCompatActivity() {
         spinnerUsuario.adapter = loadingAdapter
         spinnerUsuario.isEnabled = false
 
-        // AHORA SÍ FUNCIONARÁ PORQUE LA AGREGAMOS EN EL APISERVICE
         api.listarUsuariosPorDepto(idDepto,
             onSuccess = { lista ->
                 usuarios = lista
@@ -80,7 +73,6 @@ class IngresarSensor : AppCompatActivity() {
                 if (lista.isEmpty()) {
                     nombres.add("(No hay usuarios en este depto)")
                 } else {
-                    // Mapeamos usando las propiedades correctas de Data Class Usuario
                     nombres.addAll(lista.map { "${it.nombre} ${it.apellido}" })
                 }
 
@@ -88,38 +80,38 @@ class IngresarSensor : AppCompatActivity() {
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spinnerUsuario.adapter = adapter
 
+                // ===== CORRECCIÓN AQUÍ =====
                 spinnerUsuario.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                        if (position == 0 || lista.isEmpty()) {
-                            usuarioSeleccionadoId = 0
+                    // El primer parámetro debe ser de tipo AdapterView<*>?, no AdapterView.OnItemSelectedListener
+                    override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
+                        usuarioSeleccionadoId = if (position > 0 && position - 1 < usuarios.size) {
+                            usuarios[position - 1].id
                         } else {
-                            // El índice 1 del spinner es el usuario 0 de la lista
-                            if (position - 1 < usuarios.size) {
-                                usuarioSeleccionadoId = usuarios[position - 1].id
-                            }
+                            0
                         }
                     }
                     override fun onNothingSelected(parent: AdapterView<*>?) {}
                 }
+                // ============================
             },
             onError = {
                 spinnerUsuario.isEnabled = true
-                warn("Atención", "No se pudieron cargar los usuarios")
+                warn("Atención", "No se pudieron cargar los usuarios de tu departamento.")
             }
         )
     }
 
-    private fun limpiarUsuarios() {
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, listOf("Seleccione primero un depto"))
-        spinnerUsuario.adapter = adapter
-        spinnerUsuario.isEnabled = false
-        usuarioSeleccionadoId = 0
-    }
-
     private fun registrarSensor() {
         val codigo = etCodigo.text.toString().trim()
-        if (codigo.isEmpty()) { warn("Faltan datos", "Ingrese código"); return }
-        if (departamentoSeleccionadoId == 0) { warn("Ubicación", "Seleccione departamento"); return }
+        if (codigo.isEmpty()) {
+            warn("Faltan datos", "Ingresa el código del sensor")
+            return
+        }
+
+        if (idDeptoUsuario == -1) {
+            warn("Error de Sesión", "No se pudo identificar tu departamento.")
+            return
+        }
 
         val selectedTipoId = rgTipo.checkedRadioButtonId
         val tipo = if (selectedTipoId == R.id.rb_llavero) "llavero" else "tarjeta"
@@ -128,13 +120,16 @@ class IngresarSensor : AppCompatActivity() {
             codigoSensor = codigo,
             tipo = tipo,
             estado = "activo",
-            idDepartamento = departamentoSeleccionadoId,
+            idDepartamento = idDeptoUsuario,
             idUsuario = usuarioSeleccionadoId,
             onSuccess = {
                 SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
                     .setTitleText("¡Éxito!")
-                    .setContentText("Sensor guardado")
-                    .setConfirmClickListener { it.dismissWithAnimation(); finish() }
+                    .setContentText("Sensor guardado correctamente.")
+                    .setConfirmClickListener {
+                        it.dismissWithAnimation()
+                        finish()
+                    }
                     .show()
             },
             onError = { msg -> warn("Error", msg) }

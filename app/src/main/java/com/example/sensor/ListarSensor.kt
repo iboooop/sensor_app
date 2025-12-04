@@ -21,17 +21,20 @@ class ListarSensor : AppCompatActivity() {
     private var sensores = mutableListOf<Sensor>()
     private var visibles = mutableListOf<Sensor>()
 
+    private var idDeptoUsuario: Int = -1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_listar_sensor)
+
+        // Obtenemos el ID del departamento desde nuestro SessionManager.
+        idDeptoUsuario = SessionManager.getDepartamentoId(this)
 
         api = UsuarioApiService(this)
         rvSensores = findViewById(R.id.lista_sensores)
         etSearch = findViewById(R.id.search_sensores)
 
         rvSensores.layoutManager = LinearLayoutManager(this)
-
-        // Clic en el item -> abrirModificar
         adapter = SensorRvAdapter { s -> abrirModificar(s) }
         rvSensores.adapter = adapter
 
@@ -48,7 +51,19 @@ class ListarSensor : AppCompatActivity() {
     }
 
     private fun cargar() {
+        // Verificamos si tenemos un ID de departamento válido.
+        if (idDeptoUsuario == -1) {
+            SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
+                .setTitleText("Error de Sesión")
+                .setContentText("No se pudo obtener la información del departamento del usuario. Por favor, inicie sesión de nuevo.")
+                .setConfirmText("OK").show()
+            return // Detenemos la ejecución si no hay ID.
+        }
+
+        // ===== CÓDIGO CORREGIDO AQUÍ =====
+        // Llamamos a la función 'listarSensores' pasándole el ID del departamento.
         api.listarSensores(
+            idDepto = idDeptoUsuario,
             onSuccess = { data ->
                 sensores = data.toMutableList()
                 visibles = data.toMutableList()
@@ -56,7 +71,7 @@ class ListarSensor : AppCompatActivity() {
             },
             onError = { msg ->
                 SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
-                    .setTitleText("Error")
+                    .setTitleText("Error al Cargar Sensores")
                     .setContentText(msg)
                     .setConfirmText("OK").show()
             }
@@ -66,9 +81,8 @@ class ListarSensor : AppCompatActivity() {
     private fun filtrar(q: String) {
         val needle = q.trim().lowercase(Locale.getDefault())
         visibles = if (needle.isEmpty()) sensores.toMutableList() else sensores.filter { s ->
-            s.codigo.lowercase().contains(needle) ||
-                    s.departamentoNombre.lowercase().contains(needle) ||
-                    s.tipo.lowercase().contains(needle)
+            s.codigo.lowercase(Locale.getDefault()).contains(needle) ||
+                    s.tipo.lowercase(Locale.getDefault()).contains(needle)
         }.toMutableList()
         adapter.setItems(visibles)
     }

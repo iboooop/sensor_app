@@ -44,8 +44,6 @@
             android:layout_height="1dp"
             android:layout_marginTop="16dp"
             android:background="#E0E0E0"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_titulo" />
 
         <!-- Código del Sensor -->
@@ -69,26 +67,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Seleccione Departamento:"
+            android:text="Departamento:"
             android:textColor="#666666"
             android:textSize="12sp"
-            app:layout_constraintTop_toBottomOf="@id/til_codigo"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/til_codigo"/>
 
-        <!-- Spinner Departamento (Sin flecha extra) -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_departamento"
+        <!-- ===== CAMBIO: SPINNER REEMPLAZADO POR TEXTVIEW ===== -->
+        <!-- Este TextView mostrará el departamento del usuario y no será editable -->
+        <TextView
+            android:id="@+id/tv_departamento_fijo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
-            app:endIconMode="none"
-            app:layout_constraintTop_toBottomOf="@id/tv_depto_label">
-            <Spinner
-                android:id="@+id/spinner_departamento_sensor"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="48dp" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:padding="16dp"
+            android:background="@drawable/bg_textview_disabled"
+            android:text="Cargando departamento..."
+            android:textSize="16sp"
+            android:textColor="#333333"
+            app:layout_constraintTop_toBottomOf="@id/tv_depto_label" />
+        <!-- ======================================================== -->
 
         <!-- ETIQUETA USUARIO -->
         <TextView
@@ -99,8 +95,7 @@
             android:text="Asignar a Usuario:"
             android:textColor="#666666"
             android:textSize="12sp"
-            app:layout_constraintTop_toBottomOf="@id/til_departamento"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/tv_departamento_fijo"/>
 
         <!-- Spinner Usuario (Sin flecha extra) -->
         <com.google.android.material.textfield.TextInputLayout
@@ -117,17 +112,14 @@
                 android:minHeight="48dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Selección de Tipo -->
+        <!-- El resto del layout sigue igual... -->
         <TextView
             android:id="@+id/tv_tipo_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Tipo de Dispositivo:"
-            android:textColor="#666666"
-            android:textSize="14sp"
-            app:layout_constraintTop_toBottomOf="@id/til_usuario"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/til_usuario"/>
 
         <RadioGroup
             android:id="@+id/rg_tipo_sensor"
@@ -135,17 +127,14 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@id/tv_tipo_label"
-            app:layout_constraintStart_toStartOf="parent">
-
+            app:layout_constraintTop_toBottomOf="@id/tv_tipo_label">
             <RadioButton
                 android:id="@+id/rb_tarjeta"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android.layout_height="wrap_content"
                 android:text="Tarjeta"
                 android:checked="true"
                 android:layout_marginEnd="24dp"/>
-
             <RadioButton
                 android:id="@+id/rb_llavero"
                 android:layout_width="wrap_content"
@@ -158,17 +147,7 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginTop="32dp"
-            android:layout_marginBottom="24dp"
-            android:backgroundTint="#fbf1cf"
             android:text="REGISTRAR SENSOR"
-            android:textAllCaps="true"
-            android:textColor="#8DAEE1"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:cornerRadius="36dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/rg_tipo_sensor" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

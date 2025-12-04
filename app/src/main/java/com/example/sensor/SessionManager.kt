@@ -1,7 +1,7 @@
 package com.example.sensor
 
 import android.app.Activity
-import android.content. Context
+import android.content.Context
 import android.content.Intent
 
 object SessionManager {
@@ -12,6 +12,7 @@ object SessionManager {
     private const val KEY_EMAIL = "correo"
     private const val KEY_ROL = "rol"
     private const val KEY_ESTADO = "estado"
+    private const val KEY_DEPARTAMENTO_ID = "departamento_id"
 
     /**
      * Guardar usuario completo en sesión
@@ -23,15 +24,17 @@ object SessionManager {
         apellidos: String,
         email: String,
         rol: String = "operador",
-        estado: String = "activo"
+        estado: String = "activo",
+        departamentoId: Int
     ) {
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
             .putInt(KEY_ID, id)
             .putString(KEY_NOMBRES, nombres)
-            . putString(KEY_APELLIDOS, apellidos)
+            .putString(KEY_APELLIDOS, apellidos)
             .putString(KEY_EMAIL, email)
             .putString(KEY_ROL, rol)
-            . putString(KEY_ESTADO, estado)
+            .putString(KEY_ESTADO, estado)
+            .putInt(KEY_DEPARTAMENTO_ID, departamentoId)
             .apply()
     }
 
@@ -40,7 +43,14 @@ object SessionManager {
      * @return ID del usuario o -1 si no hay sesión
      */
     fun getUserId(ctx: Context): Int =
-        ctx.getSharedPreferences(PREFS, Context. MODE_PRIVATE).getInt(KEY_ID, -1)
+        ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getInt(KEY_ID, -1)
+
+    /**
+     * Obtener ID del departamento del usuario
+     * @return ID del departamento o -1 si no se encuentra
+     */
+    fun getDepartamentoId(ctx: Context): Int =
+        ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getInt(KEY_DEPARTAMENTO_ID, -1)
 
     /**
      * Obtener nombre completo del usuario
@@ -58,7 +68,7 @@ object SessionManager {
      * Obtener nombres del usuario
      */
     fun getNombres(ctx: Context): String =
-        ctx.getSharedPreferences(PREFS, Context. MODE_PRIVATE).getString(KEY_NOMBRES, "") ?: ""
+        ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_NOMBRES, "") ?: ""
 
     /**
      * Obtener apellidos del usuario
@@ -70,7 +80,7 @@ object SessionManager {
      * Obtener email del usuario
      */
     fun getEmail(ctx: Context): String =
-        ctx.getSharedPreferences(PREFS, Context. MODE_PRIVATE).getString(KEY_EMAIL, "") ?: ""
+        ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_EMAIL, "") ?: ""
 
     /**
      * Obtener rol del usuario
@@ -84,7 +94,7 @@ object SessionManager {
      * @return "activo" o "inactivo"
      */
     fun getEstado(ctx: Context): String =
-        ctx.getSharedPreferences(PREFS, Context. MODE_PRIVATE).getString(KEY_ESTADO, "activo") ?: "activo"
+        ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_ESTADO, "activo") ?: "activo"
 
     /**
      * Verificar si el usuario es administrador
@@ -122,8 +132,8 @@ object SessionManager {
      */
     fun logoutAndGoToLogin(activity: Activity) {
         clear(activity)
-        val i = Intent(activity, MainActivity::class.java). apply {
-            flags = Intent. FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        val i = Intent(activity, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         activity.startActivity(i)
         activity.finish()
@@ -132,33 +142,37 @@ object SessionManager {
     /**
      * Obtener toda la información del usuario como un objeto
      */
-    fun getUserInfo(ctx: Context): UserInfo?  {
+    fun getUserInfo(ctx: Context): UserInfo? {
         val id = getUserId(ctx)
         if (id == -1) return null
 
+        // ===== CÓDIGO CORREGIDO AQUÍ =====
         return UserInfo(
             id = id,
             nombres = getNombres(ctx),
             apellidos = getApellidos(ctx),
             email = getEmail(ctx),
             rol = getRol(ctx),
-            estado = getEstado(ctx)
+            estado = getEstado(ctx),
+            departamentoId = getDepartamentoId(ctx) // Se añade el id del departamento
         )
     }
 
     /**
      * Data class para información del usuario
      */
+    // ===== CÓDIGO CORREGIDO AQUÍ =====
     data class UserInfo(
         val id: Int,
         val nombres: String,
         val apellidos: String,
         val email: String,
         val rol: String,
-        val estado: String
+        val estado: String,
+        val departamentoId: Int // Se añade el id del departamento
     ) {
         val nombreCompleto: String
-            get() = "$nombres $apellidos". trim()
+            get() = "$nombres $apellidos".trim()
 
         val isAdmin: Boolean
             get() = rol == "admin"

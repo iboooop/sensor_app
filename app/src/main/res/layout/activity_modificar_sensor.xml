@@ -5,13 +5,13 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFF5FB">
+    android:background="#FFF5FB"
+    tools:context=".ModificarSensor">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp"
-        tools:context=".ModificarSensor">
+        android:padding="20dp">
 
         <!-- Título -->
         <TextView
@@ -25,9 +25,7 @@
             android:textColor="@color/text_primary"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <View
             android:id="@+id/separator"
@@ -35,9 +33,7 @@
             android:layout_height="1dp"
             android:layout_marginTop="16dp"
             android:background="#E0E0E0"
-            app:layout_constraintTop_toBottomOf="@id/tv_titulo"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/tv_titulo"/>
 
         <!-- Código Sensor -->
         <com.google.android.material.textfield.TextInputLayout
@@ -47,9 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:hint="Código del Sensor"
-            app:layout_constraintTop_toBottomOf="@id/separator"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/separator">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txt_codigo_sensor"
                 android:layout_width="match_parent"
@@ -65,25 +59,20 @@
             android:text="Departamento:"
             android:layout_marginTop="16dp"
             android:textColor="#666"
-            app:layout_constraintTop_toBottomOf="@id/til_codigo"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/til_codigo"/>
 
-        <!-- Spinner Departamento -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/til_departamento"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <!-- ===== CAMBIO: SPINNER REEMPLAZADO POR TEXTVIEW ===== -->
+        <TextView
+            android:id="@+id/tv_departamento_fijo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:endIconMode="none"
-            app:layout_constraintTop_toBottomOf="@id/lbl_departamento"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-            <Spinner
-                android:id="@+id/spinner_departamento"
-                android:layout_width="match_parent"
-                android:layout_height="56dp" /> <!-- Altura fija para evitar colapso -->
-        </com.google.android.material.textfield.TextInputLayout>
+            android:padding="16dp"
+            android:background="@drawable/bg_textview_disabled"
+            tools:text="Torre A - 101"
+            android:textSize="16sp"
+            android:textColor="#333333"
+            app:layout_constraintTop_toBottomOf="@id/lbl_departamento" />
+        <!-- ======================================================== -->
 
         <!-- Título Usuario -->
         <TextView
@@ -93,9 +82,7 @@
             android:text="Usuario Asignado:"
             android:layout_marginTop="16dp"
             android:textColor="#666"
-            app:layout_constraintTop_toBottomOf="@id/til_departamento"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/tv_departamento_fijo"/>
 
         <!-- Spinner Usuario -->
         <com.google.android.material.textfield.TextInputLayout
@@ -104,35 +91,28 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:endIconMode="none"
-            app:layout_constraintTop_toBottomOf="@id/lbl_usuario"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/lbl_usuario">
             <Spinner
                 android:id="@+id/spinner_usuario"
                 android:layout_width="match_parent"
                 android:layout_height="56dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Título Tipo -->
+        <!-- El resto del layout sigue igual... -->
         <TextView
             android:id="@+id/lbl_tipo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Tipo de Sensor:"
             android:layout_marginTop="16dp"
-            android:textColor="#666"
-            app:layout_constraintTop_toBottomOf="@id/til_usuario"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/til_usuario"/>
 
         <RadioGroup
             android:id="@+id/rg_tipo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/lbl_tipo"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/lbl_tipo">
             <RadioButton
                 android:id="@+id/rb_llavero"
                 android:layout_width="wrap_content"
@@ -146,7 +126,6 @@
                 android:text="Tarjeta" />
         </RadioGroup>
 
-        <!-- Estado Actual -->
         <TextView
             android:id="@+id/tv_estado_actual"
             android:layout_width="match_parent"
@@ -156,67 +135,40 @@
             android:textAlignment="center"
             android:textStyle="italic"
             android:textColor="#888"
-            app:layout_constraintTop_toBottomOf="@id/rg_tipo"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/rg_tipo"/>
 
-        <!-- Botones -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:layout_marginBottom="30dp"
             android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@id/tv_estado_actual"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
+            app:layout_constraintTop_toBottomOf="@id/tv_estado_actual">
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_modificar"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:backgroundTint="#8daee1"
                 android:text="GUARDAR CAMBIOS"
-                android:textColor="#fbf1cf"
-                android:textStyle="bold"
-                android:layout_marginBottom="12dp"
-                app:cornerRadius="36dp" />
-
+                android:layout_marginBottom="12dp"/>
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_desactivar"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:backgroundTint="#F0B0C7"
                 android:text="DESACTIVAR (BAJA)"
-                android:textColor="#fbf1cf"
-                android:textStyle="bold"
                 android:visibility="gone"
-                android:layout_marginBottom="12dp"
-                app:cornerRadius="36dp" />
-
+                android:layout_marginBottom="12dp"/>
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_perdido"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:backgroundTint="#FFB74D"
                 android:text="REPORTAR PERDIDO"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold"
                 android:visibility="gone"
-                android:layout_marginBottom="12dp"
-                app:cornerRadius="36dp" />
-
+                android:layout_marginBottom="12dp"/>
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_activar"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:backgroundTint="#A5D6A7"
                 android:text="REACTIVAR SENSOR"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold"
-                android:visibility="gone"
-                app:cornerRadius="36dp" />
-
+                android:visibility="gone"/>
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

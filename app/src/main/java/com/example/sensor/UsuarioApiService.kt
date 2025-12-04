@@ -25,7 +25,8 @@ class UsuarioApiService(ctx: Context) {
     fun login(
         correo: String,
         password: String,
-        onSuccess: (id: Int, nombres: String, apellidos: String, email: String, rol: String, estado: String) -> Unit,
+        // 1. CAMBIO: El callback onSuccess ahora también devuelve un Int para el departamentoId
+        onSuccess: (id: Int, nombres: String, apellidos: String, email: String, rol: String, estado: String, departamentoId: Int) -> Unit,
         onError: (String) -> Unit
     ) {
         val url = "$baseUrl/login.php"
@@ -46,15 +47,18 @@ class UsuarioApiService(ctx: Context) {
                             val email = u.optString("correo", "")
                             val rol = u.optString("rol", "operador")
                             val estado = u.optString("estado", "activo")
+                            // 2. CAMBIO: Leemos el id_departamento del JSON que nos envía el PHP
+                            val deptoId = u.optInt("id_departamento", -1)
 
                             if (estado == "inactivo") {
                                 onError("Usuario inactivo. Contacte al administrador")
                             } else {
-                                onSuccess(id, nombres, apellidos, email, rol, estado)
+                                // 3. CAMBIO: Pasamos el deptoId al callback
+                                onSuccess(id, nombres, apellidos, email, rol, estado, deptoId)
                             }
                         } else onError("Datos incompletos")
                     } else onError(r.optString("message", "Credenciales incorrectas"))
-                } catch (e: Exception) { onError("Error procesando respuesta") }
+                } catch (e: Exception) { onError("Error procesando respuesta: ${e.message}") }
             },
             { onError("Error de conexión") }
         ).apply { retryPolicy = DefaultRetryPolicy(15000, 1, 1.0f) }
@@ -186,7 +190,6 @@ class UsuarioApiService(ctx: Context) {
     // SECCIÓN: GESTIÓN DE SENSORES
     // =================================================================
 
-    // Listar usuarios filtrados por departamento (para Spinners)
     fun listarUsuariosPorDepto(idDepto: Int, onSuccess: (List<Usuario>) -> Unit, onError: (String) -> Unit) {
         val url = "$baseUrl/listar_usuarios_por_depto.php?id_departamento=$idDepto"
         val req = JsonObjectRequest(Request.Method.GET, url, null,
@@ -201,7 +204,7 @@ class UsuarioApiService(ctx: Context) {
                                 id = o.optInt("id", 0),
                                 nombre = o.optString("nombres", ""),
                                 apellido = o.optString("apellidos", ""),
-                                email = "", // Datos no necesarios para spinner
+                                email = "",
                                 rol = "",
                                 estado = "activo",
                                 departamentoNombre = ""
@@ -216,12 +219,24 @@ class UsuarioApiService(ctx: Context) {
         q.add(req)
     }
 
-    // Listar Sensores (StringRequest para mejor manejo de errores)
-    fun listarSensores(onSuccess: (List<Sensor>) -> Unit, onError: (String) -> Unit) {
-        val url = "$baseUrl/listar_sensores.php"
+    /**
+     * Lista los sensores.
+     * Si se provee un 'idDepto', filtra por ese departamento.
+     * Si 'idDepto' es nulo o 0, lista todos los sensores.
+     */
+    fun listarSensores(
+        idDepto: Int? = null,
+        onSuccess: (List<Sensor>) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        var url = "$baseUrl/listar_sensores.php"
+        if (idDepto != null && idDepto > 0) {
+            url += "?id_departamento=$idDepto"
+        }
+
         val req = StringRequest(Request.Method.GET, url,
             { response ->
-                Log.d(TAG, "Respuesta listarSensores: $response")
+                Log.d(TAG, "Respuesta listarSensores (URL: $url): $response")
                 try {
                     val r = JSONObject(response)
                     if (!r.optBoolean("success", true)) {
@@ -246,14 +261,13 @@ class UsuarioApiService(ctx: Context) {
                         )
                     }
                     onSuccess(out)
-                } catch (e: Exception) { onError("Error parseando JSON") }
+                } catch (e: Exception) { onError("Error parseando JSON: ${e.message}") }
             },
             { error -> onError("Error Red: ${error.message}") }
         )
         q.add(req)
     }
 
-    // Registrar Sensor (ENVÍA JSON)
     fun ingresarSensor(
         codigoSensor: String,
         tipo: String,
@@ -289,7 +303,6 @@ class UsuarioApiService(ctx: Context) {
         q.add(req)
     }
 
-    // Modificar Sensor Completo (Botón Guardar Cambios)
     fun modificarSensor(
         idSensor: Int,
         codigo: String,
@@ -327,7 +340,6 @@ class UsuarioApiService(ctx: Context) {
         q.add(req)
     }
 
-    // NUEVA: Cambiar solo estado (Botones rápidos)
     fun cambiarEstadoSensor(
         idSensor: Int,
         nuevoEstado: String,

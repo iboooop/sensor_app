@@ -24,9 +24,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main) // Asegúrate de que este sea el nombre correcto de tu XML
+        setContentView(R.layout.activity_main)
 
-        // Aplica insets al root real del layout: login_layout
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.login_layout)) { v, insets ->
             val sys = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(sys.left, sys.top, sys.right, sys.bottom)
@@ -34,12 +33,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Si ya hay sesión, ir directo al dashboard
-        SessionManager.getFullName(this)?.let {
-            if (it.isNotBlank()) {
-                startActivity(Intent(this, dashboardAdmin::class.java))
-                finish()
-                return
-            }
+        if (SessionManager.hasActiveSession(this)) {
+            startActivity(Intent(this, dashboardAdmin::class.java))
+            finish()
+            return
         }
 
         api = UsuarioApiService(this)
@@ -49,12 +46,10 @@ class MainActivity : AppCompatActivity() {
 
         btnLogin.setOnClickListener { intentarLogin() }
 
-        // Olvidaste tu contraseña → RecuperarContraseniaActivity
         findViewById<TextView>(R.id.tvForgotPassword).setOnClickListener {
             startActivity(Intent(this, RecuperarContraseniaActivity::class.java))
         }
 
-        // Enviar con "Enter" desde la contraseña
         etPassword.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 intentarLogin()
@@ -78,11 +73,14 @@ class MainActivity : AppCompatActivity() {
         api.login(
             correo = correo,
             password = pass,
-            onSuccess = { id, nombres, apellidos, email, rol, estado ->
-                // ✅ Guardar usuario con rol y estado
-                SessionManager.saveUser(this, id, nombres, apellidos, email, rol, estado)
+            // ===== CORRECCIÓN PRINCIPAL AQUÍ =====
+            // Ahora recibimos 'departamentoId' desde la API
+            onSuccess = { id, nombres, apellidos, email, rol, estado, departamentoId ->
 
-                // Mostrar mensaje de bienvenida según rol
+                // Y lo usamos para guardar la sesión completa en SessionManager
+                SessionManager.saveUser(this, id, nombres, apellidos, email, rol, estado, departamentoId)
+                // ===================================
+
                 val mensaje = when (rol) {
                     "admin" -> "Bienvenido Administrador"
                     "operador" -> "Bienvenido Operador"
@@ -97,7 +95,6 @@ class MainActivity : AppCompatActivity() {
 
                 setLoading(false)
 
-                // Mostrar mensaje de bienvenida con SweetAlert
                 SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
                     .setTitleText(mensaje)
                     .setContentText("$nombres $apellidos")
@@ -111,8 +108,6 @@ class MainActivity : AppCompatActivity() {
             },
             onError = { msg ->
                 setLoading(false)
-
-                // Mostrar error específico según el mensaje
                 val (titulo, contenido) = when {
                     msg.contains("inactivo", ignoreCase = true) ->
                         "Usuario Inactivo" to "Tu cuenta está desactivada. Contacta al administrador."
@@ -125,7 +120,6 @@ class MainActivity : AppCompatActivity() {
                     else ->
                         "Error de inicio de sesión" to msg
                 }
-
                 showError(titulo, contenido)
             }
         )
@@ -137,10 +131,9 @@ class MainActivity : AppCompatActivity() {
         etPassword.isEnabled = !b
     }
 
-    // SweetAlert helpers
     private fun showWarnOnce(title: String, content: String) {
         val now = System.currentTimeMillis()
-        if (now - lastWarnAt < 1500) return // antirebote 1.5s
+        if (now - lastWarnAt < 1500) return
         lastWarnAt = now
         SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
             .setTitleText(title)
